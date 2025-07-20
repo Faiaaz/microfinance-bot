@@ -277,7 +277,7 @@ function sendComplaintInfoBengali(sender) {
 }
 
 function sendLoanDetailsBengali(sender) {
-	// First send the loan products as text
+	// Send only the loan products as text
 	sendTextMessage(sender, "আমাদের লোন প্রোডাক্টসমূহ:\n\n" +
 		"১. 💻 ই-লোন (ই-কমার্স, অনলাইন ব্যবসা)\n" +
 		"২. 🚰 ওয়াশ লোন (স্যানিটেশন, স্বাস্থ্য)\n" +
@@ -286,46 +286,7 @@ function sendLoanDetailsBengali(sender) {
 		"৫. 💰 স্যালারি লোন (চাকরিজীবীদের জন্য)\n" +
 		"৬. 🌍 রেমিটেন্স লোন (প্রবাসীদের পরিবার)\n" +
 		"৭. 🏢 এসএমই লোন (ক্ষুদ্র ও মাঝারি উদ্যোগ)\n\n" +
-		"উপরে উল্লিখিত নম্বর লিখুন অথবা নিচের বোতাম ব্যবহার করুন।")
-	
-	// Then send buttons for quick access (max 3 buttons)
-	let messageData = {
-		"attachment": {
-			"type": "template",
-			"payload": {
-				"template_type": "button",
-				"text": "দ্রুত অপশন:",
-				"buttons": [{
-					"type": "postback",
-					"title": "ই-লোন",
-					"payload": "E_LOAN_INFO"
-				}, {
-					"type": "postback",
-					"title": "স্যালারি লোন",
-					"payload": "SALARY_LOAN_INFO"
-				}, {
-					"type": "postback",
-					"title": "এসএমই লোন",
-					"payload": "SME_LOAN_INFO"
-				}]
-			}
-		}
-	}
-	request({
-		url: 'https://graph.facebook.com/v2.6/me/messages',
-		qs: {access_token:token},
-		method: 'POST',
-		json: {
-			recipient: {id:sender},
-			message: messageData,
-		}
-	}, function(error, response, body) {
-		if (error) {
-			console.log('Error sending messages: ', error)
-		} else if (response.body.error) {
-			console.log('Error: ', response.body.error)
-		}
-	})
+		"উপরে উল্লিখিত নম্বর লিখুন।")
 }
 
 function sendLoanApplyBengali(sender) {
