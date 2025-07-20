@@ -84,8 +84,8 @@ app.post('/webhook/', function (req, res) {
 					} else if (text === 'services') {
 						sendServicesMenu(event.sender.id)
 					} else {
-						// Suppress fallback message - bot will not respond to unrecognized messages
-						console.log('Unrecognized message suppressed:', text)
+						// Send welcome message for unrecognized input
+						sendWelcomeMessage(event.sender.id)
 					}
 				}
 				
