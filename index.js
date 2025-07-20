@@ -465,6 +465,9 @@ function sendHelpMenu(sender) {
 
 function handlePostback(sender, payload) {
 	switch(payload) {
+		case 'GET_STARTED':
+			sendWelcomeMessage(sender)
+			break
 		case 'SERVICES':
 			sendServicesMenu(sender)
 			break
