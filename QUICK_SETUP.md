@@ -38,6 +38,7 @@ Since you deleted your bot from BotPenguin, follow these steps to set up your st
 4. **Add Environment Variable**:
    - Key: `FB_PAGE_ACCESS_TOKEN`
    - Value: [Paste your Facebook token from step 1]
+   - **Important**: Add this in the Render dashboard, not in the code file
 
 5. **Deploy** - Click "Create Web Service"
 
