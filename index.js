@@ -101,24 +101,61 @@ app.post('/webhook/', function (req, res) {
 // Use environment variable for access token (more secure)
 const token = process.env.FB_PAGE_ACCESS_TOKEN || "EAAPKDQxpu94BPKD8cvahCt5b1r01WkSaj6WTZBlSJkfbgoxiZBKL7ExPZAZCVLaNdkfy6ZBXn1c4TWZBpJ0ZA3v5RlrPqpoToGIxFoO0PDcihlROoMr2IZC1CXzxGE0MgQGWjmHUyytOcZAWUSexapMaLEzdzgpJyAKlzExv3J9C3KBcwosEqWmvM6i45UqCohOeoP1z4yMd4tgZDZD"
 
-// Set up Get Started button
-function setupGetStarted() {
+// Set up Greeting Text (shows immediately when user clicks Send Message)
+function setupGreetingText() {
 	request({
 		url: 'https://graph.facebook.com/v2.6/me/messenger_profile',
 		qs: {access_token:token},
 		method: 'POST',
 		json: {
-			get_started: {
-				payload: "GET_STARTED"
-			}
+			greeting: [{
+				locale: "default",
+				text: "শক্তি ফাউন্ডেশনের অফিসিয়াল পেইজে আপনাকে স্বাগতম।\n\nআপনার কী জানতে ইচ্ছা?\n\n১. লোন সম্পর্কে জানতে চাই\n২. সেভিংস প্রোডাক্টস সম্পর্কে জানতে চাই\n৩. অভিযোগ জানাতে চাই\n\nউপরে উল্লিখিত নম্বর লিখুন অথবা নিচের বোতাম ব্যবহার করুন।"
+			}]
 		}
 	}, function(error, response, body) {
 		if (error) {
-			console.log('Error setting up Get Started button: ', error)
+			console.log('Error setting up Greeting Text: ', error)
 		} else if (response.body.error) {
 			console.log('Error: ', response.body.error)
 		} else {
-			console.log('Get Started button set up successfully!')
+			console.log('Greeting Text set up successfully!')
+		}
+	})
+}
+
+// Set up Persistent Menu (buttons that stay at bottom)
+function setupPersistentMenu() {
+	request({
+		url: 'https://graph.facebook.com/v2.6/me/messenger_profile',
+		qs: {access_token:token},
+		method: 'POST',
+		json: {
+			persistent_menu: [{
+				locale: "default",
+				composer_input_disabled: false,
+				call_to_actions: [{
+					title: "লোন সম্পর্কে জানতে চাই",
+					type: "postback",
+					payload: "LOAN_INFO_BENGALI"
+				}, {
+					title: "সেভিংস সম্পর্কে জানতে চাই",
+					type: "postback",
+					payload: "SAVINGS_INFO_BENGALI"
+				}, {
+					title: "অভিযোগ জানাতে চাই",
+					type: "postback",
+					payload: "COMPLAINT_BENGALI"
+				}]
+			}]
+		}
+	}, function(error, response, body) {
+		if (error) {
+			console.log('Error setting up Persistent Menu: ', error)
+		} else if (response.body.error) {
+			console.log('Error: ', response.body.error)
+		} else {
+			console.log('Persistent Menu set up successfully!')
 		}
 	})
 }
@@ -414,9 +451,6 @@ function sendHelpMenu(sender) {
 
 function handlePostback(sender, payload) {
 	switch(payload) {
-		case 'GET_STARTED':
-			sendWelcomeMessage(sender)
-			break
 		case 'SERVICES':
 			sendServicesMenu(sender)
 			break
@@ -478,6 +512,7 @@ function handlePostback(sender, payload) {
 // spin spin sugar
 app.listen(app.get('port'), function() {
 	console.log('Microfinance Bot running on port', app.get('port'))
-	// Set up Get Started button when server starts
-	setupGetStarted()
+	// Set up Greeting Text and Persistent Menu when server starts
+	setupGreetingText()
+	setupPersistentMenu()
 })
