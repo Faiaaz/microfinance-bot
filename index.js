@@ -50,6 +50,12 @@ app.post('/webhook/', function (req, res) {
 					// Handle different user inputs
 					if (text === 'hello' || text === 'hi' || text === 'hey') {
 						sendWelcomeMessage(event.sender.id)
+					} else if (text === '1' || text === '১') {
+						sendLoanInfoBengali(event.sender.id)
+					} else if (text === '2' || text === '২') {
+						sendSavingsInfoBengali(event.sender.id)
+					} else if (text === '3' || text === '৩') {
+						sendComplaintInfoBengali(event.sender.id)
 					} else if (text.includes('loan') || text.includes('borrow')) {
 						sendLoanInfo(event.sender.id)
 					} else if (text.includes('interest') || text.includes('rate')) {
@@ -102,27 +108,28 @@ function sendTextMessage(sender, text) {
 }
 
 function sendWelcomeMessage(sender) {
+	// Send welcome message with full options as text
+	sendTextMessage(sender, "শক্তি ফাউন্ডেশনের অফিসিয়াল পেইজে আপনাকে স্বাগতম।\n\nআপনার কী জানতে ইচ্ছা?\n\n১. লোন সম্পর্কে জানতে চাই\n২. সেভিংস প্রোডাক্টস সম্পর্কে জানতে চাই\n৩. অভিযোগ জানাতে চাই\n\nউপরে উল্লিখিত নম্বর লিখুন অথবা নিচের বোতাম ব্যবহার করুন।")
+	
+	// Then send the options as buttons (shorter versions)
 	let messageData = {
 		"attachment": {
 			"type": "template",
 			"payload": {
-				"template_type": "generic",
-				"elements": [{
-					"title": "শক্তি ফাউন্ডেশনের অফিসিয়াল পেইজে আপনাকে স্বাগতম।",
-					"subtitle": "আপনার কী জানতে ইচ্ছা?",
-					"buttons": [{
-						"type": "postback",
-						"title": "লোন সম্পর্কে জানতে চাই",
-						"payload": "LOAN_INFO_BENGALI"
-					}, {
-						"type": "postback",
-						"title": "সেভিংস প্রোডাক্টস সম্পর্কে জানতে চাই",
-						"payload": "SAVINGS_INFO_BENGALI"
-					}, {
-						"type": "postback",
-						"title": "অভিযোগ জানাতে চাই",
-						"payload": "COMPLAINT_BENGALI"
-					}]
+				"template_type": "button",
+				"text": "দ্রুত অপশন:",
+				"buttons": [{
+					"type": "postback",
+					"title": "লোন সম্পর্কে জানতে চাই",
+					"payload": "LOAN_INFO_BENGALI"
+				}, {
+					"type": "postback",
+					"title": "সেভিংস সম্পর্কে জানতে চাই",
+					"payload": "SAVINGS_INFO_BENGALI"
+				}, {
+					"type": "postback",
+					"title": "অভিযোগ জানাতে চাই",
+					"payload": "COMPLAINT_BENGALI"
 				}]
 			}
 		}
