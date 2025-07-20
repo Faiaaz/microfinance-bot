@@ -20,45 +20,61 @@ app.get('/', function (req, res) {
 
 // for facebook verification
 app.get('/webhook/', function (req, res) {
-	if (req.query['hub.verify_token'] === 'my_voice_is_my_password_verify_me') {
-		res.send(req.query['hub.challenge'])
+	console.log('Webhook verification request received')
+	console.log('Mode:', req.query['hub.mode'])
+	console.log('Token:', req.query['hub.verify_token'])
+	console.log('Challenge:', req.query['hub.challenge'])
+	
+	if (req.query['hub.mode'] === 'subscribe' && req.query['hub.verify_token'] === 'my_voice_is_my_password_verify_me') {
+		console.log('Webhook verified successfully')
+		res.status(200).send(req.query['hub.challenge'])
 	} else {
-		res.send('Error, wrong token')
+		console.log('Webhook verification failed')
+		res.status(403).send('Error, wrong token')
 	}
 })
 
 // to post data
 app.post('/webhook/', function (req, res) {
-	let messaging_events = req.body.entry[0].messaging
-	for (let i = 0; i < messaging_events.length; i++) {
-		let event = req.body.entry[0].messaging[i]
-		let sender = event.sender.id
-		if (event.message && event.message.text) {
-			let text = event.message.text.toLowerCase()
-			
-			// Handle different user inputs
-			if (text === 'hello' || text === 'hi' || text === 'hey') {
-				sendWelcomeMessage(sender)
-			} else if (text.includes('loan') || text.includes('borrow')) {
-				sendLoanInfo(sender)
-			} else if (text.includes('interest') || text.includes('rate')) {
-				sendInterestInfo(sender)
-			} else if (text.includes('apply') || text.includes('application')) {
-				sendApplicationInfo(sender)
-			} else if (text.includes('help') || text === 'menu') {
-				sendHelpMenu(sender)
-			} else if (text === 'services') {
-				sendServicesMenu(sender)
-			} else {
-				sendTextMessage(sender, "Thanks for your message! Type 'help' to see what I can assist you with regarding microfinance services.")
-			}
-		}
-		if (event.postback) {
-			let payload = event.postback.payload
-			handlePostback(sender, payload)
-		}
+	console.log('Webhook POST received:', JSON.stringify(req.body, null, 2))
+	
+	if (req.body.object === 'page') {
+		req.body.entry.forEach(function(entry) {
+			entry.messaging.forEach(function(event) {
+				console.log('Processing message from:', event.sender.id)
+				
+				if (event.message && event.message.text) {
+					let text = event.message.text.toLowerCase()
+					console.log('Received text:', text)
+					
+					// Handle different user inputs
+					if (text === 'hello' || text === 'hi' || text === 'hey') {
+						sendWelcomeMessage(event.sender.id)
+					} else if (text.includes('loan') || text.includes('borrow')) {
+						sendLoanInfo(event.sender.id)
+					} else if (text.includes('interest') || text.includes('rate')) {
+						sendInterestInfo(event.sender.id)
+					} else if (text.includes('apply') || text.includes('application')) {
+						sendApplicationInfo(event.sender.id)
+					} else if (text.includes('help') || text === 'menu') {
+						sendHelpMenu(event.sender.id)
+					} else if (text === 'services') {
+						sendServicesMenu(event.sender.id)
+					} else {
+						sendTextMessage(event.sender.id, "Thanks for your message! Type 'help' to see what I can assist you with regarding microfinance services.")
+					}
+				}
+				
+				if (event.postback) {
+					console.log('Received postback:', event.postback.payload)
+					handlePostback(event.sender.id, event.postback.payload)
+				}
+			})
+		})
+		res.status(200).send('EVENT_RECEIVED')
+	} else {
+		res.sendStatus(404)
 	}
-	res.sendStatus(200)
 })
 
 // Use environment variable for access token (more secure)
