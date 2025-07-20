@@ -263,13 +263,59 @@ function sendComplaintInfoBengali(sender) {
 }
 
 function sendLoanDetailsBengali(sender) {
-	sendTextMessage(sender, "💰 আমাদের ঋণ পরিষেবা:\n\n" +
-		"• ব্যবসায়িক ঋণ: $500 - $5,000\n" +
-		"• ব্যক্তিগত ঋণ: $200 - $2,000\n" +
-		"• শিক্ষা ঋণ: $300 - $3,000\n\n" +
-		"সুদের হার: বছরে ৮% থেকে শুরু\n" +
-		"পরিশোধের সময়: ৬-২৪ মাস\n\n" +
-		"আরও জানতে 'help' লিখুন!")
+	let messageData = {
+		"attachment": {
+			"type": "template",
+			"payload": {
+				"template_type": "button",
+				"text": "আমাদের লোন প্রোডাক্টসমূহ:",
+				"buttons": [{
+					"type": "postback",
+					"title": "ই-লোন",
+					"payload": "E_LOAN_INFO"
+				}, {
+					"type": "postback",
+					"title": "ওয়াশ লোন",
+					"payload": "WASH_LOAN_INFO"
+				}, {
+					"type": "postback",
+					"title": "জাগরণ লোন",
+					"payload": "JAGRAN_LOAN_INFO"
+				}, {
+					"type": "postback",
+					"title": "অগ্রসর লোন",
+					"payload": "AGRASAR_LOAN_INFO"
+				}, {
+					"type": "postback",
+					"title": "স্যালারি লোন",
+					"payload": "SALARY_LOAN_INFO"
+				}, {
+					"type": "postback",
+					"title": "রেমিটেন্স লোন",
+					"payload": "REMITTANCE_LOAN_INFO"
+				}, {
+					"type": "postback",
+					"title": "এসএমই লোন",
+					"payload": "SME_LOAN_INFO"
+				}]
+			}
+		}
+	}
+	request({
+		url: 'https://graph.facebook.com/v2.6/me/messages',
+		qs: {access_token:token},
+		method: 'POST',
+		json: {
+			recipient: {id:sender},
+			message: messageData,
+		}
+	}, function(error, response, body) {
+		if (error) {
+			console.log('Error sending messages: ', error)
+		} else if (response.body.error) {
+			console.log('Error: ', response.body.error)
+		}
+	})
 }
 
 function sendLoanApplyBengali(sender) {
@@ -283,6 +329,69 @@ function sendLoanApplyBengali(sender) {
 		"• আয়ের প্রমাণ\n" +
 		"• ব্যাংক স্টেটমেন্ট (৩ মাস)\n\n" +
 		"আবেদন করতে আমাদের ওয়েবসাইটে যান: www.microfinance.com/apply")
+}
+
+function sendELoanInfo(sender) {
+	sendTextMessage(sender, "💻 ই-লোন:\n\n" +
+		"• সর্বোচ্চ ঋণ: ৫০,০০০ টাকা\n" +
+		"• সুদের হার: বছরে ১২%\n" +
+		"• মেয়াদ: ১২-৩৬ মাস\n" +
+		"• উদ্দেশ্য: ই-কমার্স, অনলাইন ব্যবসা\n\n" +
+		"আবেদনের জন্য: www.shoktifoundation.com/e-loan")
+}
+
+function sendWashLoanInfo(sender) {
+	sendTextMessage(sender, "🚰 ওয়াশ লোন:\n\n" +
+		"• সর্বোচ্চ ঋণ: ৩০,০০০ টাকা\n" +
+		"• সুদের হার: বছরে ১০%\n" +
+		"• মেয়াদ: ১২-২৪ মাস\n" +
+		"• উদ্দেশ্য: স্যানিটেশন, স্বাস্থ্য\n\n" +
+		"আবেদনের জন্য: www.shoktifoundation.com/wash-loan")
+}
+
+function sendJagranLoanInfo(sender) {
+	sendTextMessage(sender, "🌅 জাগরণ লোন:\n\n" +
+		"• সর্বোচ্চ ঋণ: ২৫,০০০ টাকা\n" +
+		"• সুদের হার: বছরে ৯%\n" +
+		"• মেয়াদ: ১২-১৮ মাস\n" +
+		"• উদ্দেশ্য: ক্ষুদ্র ব্যবসা শুরু\n\n" +
+		"আবেদনের জন্য: www.shoktifoundation.com/jagran-loan")
+}
+
+function sendAgrasarLoanInfo(sender) {
+	sendTextMessage(sender, "📈 অগ্রসর লোন:\n\n" +
+		"• সর্বোচ্চ ঋণ: ১,০০,০০০ টাকা\n" +
+		"• সুদের হার: বছরে ১১%\n" +
+		"• মেয়াদ: ১২-৪৮ মাস\n" +
+		"• উদ্দেশ্য: ব্যবসা সম্প্রসারণ\n\n" +
+		"আবেদনের জন্য: www.shoktifoundation.com/agrasar-loan")
+}
+
+function sendSalaryLoanInfo(sender) {
+	sendTextMessage(sender, "💰 স্যালারি লোন:\n\n" +
+		"• সর্বোচ্চ ঋণ: ৫,০০,০০০ টাকা\n" +
+		"• সুদের হার: বছরে ৮%\n" +
+		"• মেয়াদ: ১২-৬০ মাস\n" +
+		"• উদ্দেশ্য: চাকরিজীবীদের জন্য\n\n" +
+		"আবেদনের জন্য: www.shoktifoundation.com/salary-loan")
+}
+
+function sendRemittanceLoanInfo(sender) {
+	sendTextMessage(sender, "🌍 রেমিটেন্স লোন:\n\n" +
+		"• সর্বোচ্চ ঋণ: ২,০০,০০০ টাকা\n" +
+		"• সুদের হার: বছরে ১০%\n" +
+		"• মেয়াদ: ১২-৩৬ মাস\n" +
+		"• উদ্দেশ্য: প্রবাসীদের পরিবার\n\n" +
+		"আবেদনের জন্য: www.shoktifoundation.com/remittance-loan")
+}
+
+function sendSMELoanInfo(sender) {
+	sendTextMessage(sender, "🏢 এসএমই লোন:\n\n" +
+		"• সর্বোচ্চ ঋণ: ১০,০০,০০০ টাকা\n" +
+		"• সুদের হার: বছরে ১২%\n" +
+		"• মেয়াদ: ১২-৭২ মাস\n" +
+		"• উদ্দেশ্য: ক্ষুদ্র ও মাঝারি উদ্যোগ\n\n" +
+		"আবেদনের জন্য: www.shoktifoundation.com/sme-loan")
 }
 
 function sendInterestInfo(sender) {
@@ -342,6 +451,27 @@ function handlePostback(sender, payload) {
 			break
 		case 'LOAN_APPLY_BENGALI':
 			sendLoanApplyBengali(sender)
+			break
+		case 'E_LOAN_INFO':
+			sendELoanInfo(sender)
+			break
+		case 'WASH_LOAN_INFO':
+			sendWashLoanInfo(sender)
+			break
+		case 'JAGRAN_LOAN_INFO':
+			sendJagranLoanInfo(sender)
+			break
+		case 'AGRASAR_LOAN_INFO':
+			sendAgrasarLoanInfo(sender)
+			break
+		case 'SALARY_LOAN_INFO':
+			sendSalaryLoanInfo(sender)
+			break
+		case 'REMITTANCE_LOAN_INFO':
+			sendRemittanceLoanInfo(sender)
+			break
+		case 'SME_LOAN_INFO':
+			sendSMELoanInfo(sender)
 			break
 		case 'EDUCATION':
 			sendTextMessage(sender, "📚 Financial Education Resources:\n\n" +
