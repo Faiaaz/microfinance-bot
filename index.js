@@ -106,20 +106,23 @@ function sendWelcomeMessage(sender) {
 		"attachment": {
 			"type": "template",
 			"payload": {
-				"template_type": "button",
-				"text": "শক্তি ফাউন্ডেশনের অফিসিয়াল পেইজে আপনাকে স্বাগতম।",
-				"buttons": [{
-					"type": "postback",
-					"title": "লোন সম্পর্কে জানতে চাই",
-					"payload": "LOAN_INFO_BENGALI"
-				}, {
-					"type": "postback",
-					"title": "সেভিংস সম্পর্কে জানতে চাই",
-					"payload": "SAVINGS_INFO_BENGALI"
-				}, {
-					"type": "postback",
-					"title": "অভিযোগ জানাতে চাই",
-					"payload": "COMPLAINT_BENGALI"
+				"template_type": "generic",
+				"elements": [{
+					"title": "শক্তি ফাউন্ডেশনের অফিসিয়াল পেইজে আপনাকে স্বাগতম।",
+					"subtitle": "আপনার কী জানতে ইচ্ছা?",
+					"buttons": [{
+						"type": "postback",
+						"title": "লোন সম্পর্কে জানতে চাই",
+						"payload": "LOAN_INFO_BENGALI"
+					}, {
+						"type": "postback",
+						"title": "সেভিংস প্রোডাক্টস সম্পর্কে জানতে চাই",
+						"payload": "SAVINGS_INFO_BENGALI"
+					}, {
+						"type": "postback",
+						"title": "অভিযোগ জানাতে চাই",
+						"payload": "COMPLAINT_BENGALI"
+					}]
 				}]
 			}
 		}
