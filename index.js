@@ -123,7 +123,46 @@ function sendTextMessage(sender, text) {
 
 function sendWelcomeMessage(sender) {
 	// Send welcome message with full options as text
-	sendTextMessage(sender, "শক্তি ফাউন্ডেশনের অফিসিয়াল পেইজে আপনাকে স্বাগতম।\n\nআপনার কী জানতে ইচ্ছা?\n\n১. লোন সম্পর্কে জানতে চাই\n২. সেভিংস প্রোডাক্টস সম্পর্কে জানতে চাই\n৩. অভিযোগ জানাতে চাই\n\nউপরে উল্লিখিত নম্বর লিখুন।")
+	sendTextMessage(sender, "শক্তি ফাউন্ডেশনের অফিসিয়াল পেইজে আপনাকে স্বাগতম।\n\nআপনার কী জানতে ইচ্ছা?\n\n১. লোন সম্পর্কে জানতে চাই\n২. সেভিংস প্রোডাক্টস সম্পর্কে জানতে চাই\n৩. অভিযোগ জানাতে চাই\n\nউপরে উল্লিখিত নম্বর লিখুন অথবা নিচের বোতাম ব্যবহার করুন।")
+	
+	// Then send the options as buttons (shorter versions)
+	let messageData = {
+		"attachment": {
+			"type": "template",
+			"payload": {
+				"template_type": "button",
+				"text": "দ্রুত অপশন:",
+				"buttons": [{
+					"type": "postback",
+					"title": "লোন সম্পর্কে জানতে চাই",
+					"payload": "LOAN_INFO_BENGALI"
+				}, {
+					"type": "postback",
+					"title": "সেভিংস সম্পর্কে জানতে চাই",
+					"payload": "SAVINGS_INFO_BENGALI"
+				}, {
+					"type": "postback",
+					"title": "অভিযোগ জানাতে চাই",
+					"payload": "COMPLAINT_BENGALI"
+				}]
+			}
+		}
+	}
+	request({
+		url: 'https://graph.facebook.com/v2.6/me/messages',
+		qs: {access_token:token},
+		method: 'POST',
+		json: {
+			recipient: {id:sender},
+			message: messageData,
+		}
+	}, function(error, response, body) {
+		if (error) {
+			console.log('Error sending messages: ', error)
+		} else if (response.body.error) {
+			console.log('Error: ', response.body.error)
+		}
+	})
 }
 
 function sendServicesMenu(sender) {
