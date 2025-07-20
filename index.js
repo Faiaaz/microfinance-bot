@@ -61,7 +61,8 @@ app.post('/webhook/', function (req, res) {
 					} else if (text === 'services') {
 						sendServicesMenu(event.sender.id)
 					} else {
-						sendTextMessage(event.sender.id, "🤖 Hi! I'm your microfinance assistant. Say 'hello' to get started or 'help' to see what I can do!")
+						// Suppress fallback message - bot will not respond to unrecognized messages
+						console.log('Unrecognized message suppressed:', text)
 					}
 				}
 				
