@@ -52,10 +52,24 @@ app.post('/webhook/', function (req, res) {
 						sendWelcomeMessage(event.sender.id)
 					} else if (text === '1' || text === '১') {
 						sendLoanInfoBengali(event.sender.id)
+					} else if (text === 'e' || text === 'E' || text === 'ই') {
+						sendELoanInfo(event.sender.id)
+					} else if (text === 'w' || text === 'W' || text === 'ও') {
+						sendWashLoanInfo(event.sender.id)
+					} else if (text === 'j' || text === 'J' || text === 'জ') {
+						sendJagranLoanInfo(event.sender.id)
 					} else if (text === '2' || text === '২') {
 						sendSavingsInfoBengali(event.sender.id)
 					} else if (text === '3' || text === '৩') {
 						sendComplaintInfoBengali(event.sender.id)
+					} else if (text === '4' || text === '৪') {
+						sendAgrasarLoanInfo(event.sender.id)
+					} else if (text === '5' || text === '৫') {
+						sendSalaryLoanInfo(event.sender.id)
+					} else if (text === '6' || text === '৬') {
+						sendRemittanceLoanInfo(event.sender.id)
+					} else if (text === '7' || text === '৭') {
+						sendSMELoanInfo(event.sender.id)
 					} else if (text.includes('loan') || text.includes('borrow')) {
 						sendLoanInfo(event.sender.id)
 					} else if (text.includes('interest') || text.includes('rate')) {
@@ -263,36 +277,32 @@ function sendComplaintInfoBengali(sender) {
 }
 
 function sendLoanDetailsBengali(sender) {
+	// First send the loan products as text
+	sendTextMessage(sender, "আমাদের লোন প্রোডাক্টসমূহ:\n\n" +
+		"১. 💻 ই-লোন (ই-কমার্স, অনলাইন ব্যবসা)\n" +
+		"২. 🚰 ওয়াশ লোন (স্যানিটেশন, স্বাস্থ্য)\n" +
+		"৩. 🌅 জাগরণ লোন (ক্ষুদ্র ব্যবসা শুরু)\n" +
+		"৪. 📈 অগ্রসর লোন (ব্যবসা সম্প্রসারণ)\n" +
+		"৫. 💰 স্যালারি লোন (চাকরিজীবীদের জন্য)\n" +
+		"৬. 🌍 রেমিটেন্স লোন (প্রবাসীদের পরিবার)\n" +
+		"৭. 🏢 এসএমই লোন (ক্ষুদ্র ও মাঝারি উদ্যোগ)\n\n" +
+		"উপরে উল্লিখিত নম্বর লিখুন অথবা নিচের বোতাম ব্যবহার করুন।")
+	
+	// Then send buttons for quick access (max 3 buttons)
 	let messageData = {
 		"attachment": {
 			"type": "template",
 			"payload": {
 				"template_type": "button",
-				"text": "আমাদের লোন প্রোডাক্টসমূহ:",
+				"text": "দ্রুত অপশন:",
 				"buttons": [{
 					"type": "postback",
 					"title": "ই-লোন",
 					"payload": "E_LOAN_INFO"
 				}, {
 					"type": "postback",
-					"title": "ওয়াশ লোন",
-					"payload": "WASH_LOAN_INFO"
-				}, {
-					"type": "postback",
-					"title": "জাগরণ লোন",
-					"payload": "JAGRAN_LOAN_INFO"
-				}, {
-					"type": "postback",
-					"title": "অগ্রসর লোন",
-					"payload": "AGRASAR_LOAN_INFO"
-				}, {
-					"type": "postback",
 					"title": "স্যালারি লোন",
 					"payload": "SALARY_LOAN_INFO"
-				}, {
-					"type": "postback",
-					"title": "রেমিটেন্স লোন",
-					"payload": "REMITTANCE_LOAN_INFO"
 				}, {
 					"type": "postback",
 					"title": "এসএমই লোন",
