@@ -114,7 +114,7 @@ function sendWelcomeMessage(sender) {
 					"payload": "LOAN_INFO_BENGALI"
 				}, {
 					"type": "postback",
-					"title": "সেভিংস প্রোডাক্টস সম্পর্কে জানতে চাই",
+					"title": "সেভিংস সম্পর্কে জানতে চাই",
 					"payload": "SAVINGS_INFO_BENGALI"
 				}, {
 					"type": "postback",
