@@ -101,6 +101,28 @@ app.post('/webhook/', function (req, res) {
 // Use environment variable for access token (more secure)
 const token = process.env.FB_PAGE_ACCESS_TOKEN || "EAAPKDQxpu94BPKD8cvahCt5b1r01WkSaj6WTZBlSJkfbgoxiZBKL7ExPZAZCVLaNdkfy6ZBXn1c4TWZBpJ0ZA3v5RlrPqpoToGIxFoO0PDcihlROoMr2IZC1CXzxGE0MgQGWjmHUyytOcZAWUSexapMaLEzdzgpJyAKlzExv3J9C3KBcwosEqWmvM6i45UqCohOeoP1z4yMd4tgZDZD"
 
+// Set up Get Started button
+function setupGetStarted() {
+	request({
+		url: 'https://graph.facebook.com/v2.6/me/messenger_profile',
+		qs: {access_token:token},
+		method: 'POST',
+		json: {
+			get_started: {
+				payload: "GET_STARTED"
+			}
+		}
+	}, function(error, response, body) {
+		if (error) {
+			console.log('Error setting up Get Started button: ', error)
+		} else if (response.body.error) {
+			console.log('Error: ', response.body.error)
+		} else {
+			console.log('Get Started button set up successfully!')
+		}
+	})
+}
+
 function sendTextMessage(sender, text) {
 	let messageData = { text:text }
 	
@@ -392,6 +414,9 @@ function sendHelpMenu(sender) {
 
 function handlePostback(sender, payload) {
 	switch(payload) {
+		case 'GET_STARTED':
+			sendWelcomeMessage(sender)
+			break
 		case 'SERVICES':
 			sendServicesMenu(sender)
 			break
@@ -453,4 +478,6 @@ function handlePostback(sender, payload) {
 // spin spin sugar
 app.listen(app.get('port'), function() {
 	console.log('Microfinance Bot running on port', app.get('port'))
+	// Set up Get Started button when server starts
+	setupGetStarted()
 })
