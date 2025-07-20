@@ -15,7 +15,7 @@ app.use(bodyParser.json())
 
 // index
 app.get('/', function (req, res) {
-	res.send('Microfinance Bot is running! 🤖💰')
+	res.send('Microfinance Bot is running! 🤖💰 - Updated for Railway deployment')
 })
 
 // for facebook verification
