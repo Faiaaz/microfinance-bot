@@ -106,20 +106,20 @@ function sendWelcomeMessage(sender) {
 		"attachment": {
 			"type": "template",
 			"payload": {
-				"template_type": "generic",
-				"elements": [{
-					"title": "Welcome to Microfinance Bot! 🤖",
-					"subtitle": "Your trusted partner for financial services",
-					"image_url": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400",
-					"buttons": [{
-						"type": "postback",
-						"title": "Our Services",
-						"payload": "SERVICES"
-					}, {
-						"type": "postback",
-						"title": "Get Help",
-						"payload": "HELP"
-					}],
+				"template_type": "button",
+				"text": "আপনার কী জানতে ইচ্ছা? (What would you like to know?)",
+				"buttons": [{
+					"type": "postback",
+					"title": "লোন সম্পর্কে জানতে চাই",
+					"payload": "LOAN_INFO_BENGALI"
+				}, {
+					"type": "postback",
+					"title": "সেভিংস প্রোডাক্টস সম্পর্কে জানতে চাই",
+					"payload": "SAVINGS_INFO_BENGALI"
+				}, {
+					"type": "postback",
+					"title": "অভিযোগ জানাতে চাই",
+					"payload": "COMPLAINT_BENGALI"
 				}]
 			}
 		}
@@ -196,6 +196,36 @@ function sendLoanInfo(sender) {
 		"Type 'apply' to start your application!")
 }
 
+function sendLoanInfoBengali(sender) {
+	sendTextMessage(sender, "💰 আমাদের ঋণ পরিষেবা:\n\n" +
+		"• ব্যবসায়িক ঋণ: $500 - $5,000\n" +
+		"• ব্যক্তিগত ঋণ: $200 - $2,000\n" +
+		"• শিক্ষা ঋণ: $300 - $3,000\n\n" +
+		"সুদের হার: বছরে ৮% থেকে শুরু\n" +
+		"পরিশোধের সময়: ৬-২৪ মাস\n\n" +
+		"আবেদন করতে 'apply' লিখুন!")
+}
+
+function sendSavingsInfoBengali(sender) {
+	sendTextMessage(sender, "💾 আমাদের সঞ্চয় পণ্যসমূহ:\n\n" +
+		"• সঞ্চয় হিসাব: সর্বনিম্ন $১০\n" +
+		"• স্থায়ী আমানত: $১০০ থেকে শুরু\n" +
+		"• লক্ষ্য সঞ্চয়: বিশেষ উদ্দেশ্যে\n\n" +
+		"সুদের হার: বছরে ৩-৫%\n" +
+		"নিরাপদ এবং নির্ভরযোগ্য\n\n" +
+		"আরও জানতে 'help' লিখুন!")
+}
+
+function sendComplaintInfoBengali(sender) {
+	sendTextMessage(sender, "📝 অভিযোগ জানানোর পদ্ধতি:\n\n" +
+		"আপনার অভিযোগ জানাতে:\n" +
+		"• ইমেইল: support@microfinance.com\n" +
+		"• ফোন: +১-৮০০-১২৩-৪৫৬৭\n" +
+		"• ওয়েবসাইট: www.microfinance.com/complaints\n\n" +
+		"আমরা ২৪ ঘণ্টার মধ্যে প্রতিক্রিয়া জানাবো।\n" +
+		"ধন্যবাদ আপনার মতামত জানানোর জন্য!")
+}
+
 function sendInterestInfo(sender) {
 	sendTextMessage(sender, "📊 Our Interest Rates:\n\n" +
 		"• Business Loans: 8-12% annually\n" +
@@ -238,6 +268,15 @@ function handlePostback(sender, payload) {
 			break
 		case 'LOAN_INFO':
 			sendLoanInfo(sender)
+			break
+		case 'LOAN_INFO_BENGALI':
+			sendLoanInfoBengali(sender)
+			break
+		case 'SAVINGS_INFO_BENGALI':
+			sendSavingsInfoBengali(sender)
+			break
+		case 'COMPLAINT_BENGALI':
+			sendComplaintInfoBengali(sender)
 			break
 		case 'EDUCATION':
 			sendTextMessage(sender, "📚 Financial Education Resources:\n\n" +
