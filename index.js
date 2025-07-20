@@ -47,9 +47,12 @@ app.post('/webhook/', function (req, res) {
 					let text = event.message.text.toLowerCase()
 					console.log('Received text:', text)
 					
+					// Send welcome message if this is the first interaction
+					sendWelcomeIfNeeded(event.sender.id)
+					
 					// Handle different user inputs
-					if (text === 'hello' || text === 'hi' || text === 'hey') {
-						sendWelcomeMessage(event.sender.id)
+					if (text === 'hello' || text === 'hi' || text === 'hey' || text === 'start' || text === 'begin') {
+						// Welcome already sent above, no need to send again
 					} else if (text === '1' || text === '১') {
 						sendLoanInfoBengali(event.sender.id)
 					} else if (text === 'e' || text === 'E' || text === 'ই') {
@@ -110,7 +113,7 @@ function setupGreetingText() {
 		json: {
 			greeting: [{
 				locale: "default",
-				text: "শক্তি ফাউন্ডেশনের অফিসিয়াল পেইজে আপনাকে স্বাগতম।\n\nআপনার কী জানতে ইচ্ছা?\n\n১. লোন সম্পর্কে জানতে চাই\n২. সেভিংস প্রোডাক্টস সম্পর্কে জানতে চাই\n৩. অভিযোগ জানাতে চাই\n\nউপরে উল্লিখিত নম্বর লিখুন অথবা নিচের বোতাম ব্যবহার করুন।"
+				text: "শক্তি ফাউন্ডেশনের অফিসিয়াল পেইজে আপনাকে স্বাগতম। আপনার কী জানতে ইচ্ছা?"
 			}]
 		}
 	}, function(error, response, body) {
@@ -158,6 +161,17 @@ function setupPersistentMenu() {
 			console.log('Persistent Menu set up successfully!')
 		}
 	})
+}
+
+// Track if user has received welcome message
+let welcomeSent = new Set()
+
+// Function to send welcome message if not already sent
+function sendWelcomeIfNeeded(sender) {
+	if (!welcomeSent.has(sender)) {
+		welcomeSent.add(sender)
+		sendWelcomeMessage(sender)
+	}
 }
 
 function sendTextMessage(sender, text) {
