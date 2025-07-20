@@ -122,47 +122,49 @@ function sendTextMessage(sender, text) {
 }
 
 function sendWelcomeMessage(sender) {
-	// Send welcome message with full options as text
+	// First send the welcome message with full options as text
 	sendTextMessage(sender, "শক্তি ফাউন্ডেশনের অফিসিয়াল পেইজে আপনাকে স্বাগতম।\n\nআপনার কী জানতে ইচ্ছা?\n\n১. লোন সম্পর্কে জানতে চাই\n২. সেভিংস প্রোডাক্টস সম্পর্কে জানতে চাই\n৩. অভিযোগ জানাতে চাই\n\nউপরে উল্লিখিত নম্বর লিখুন অথবা নিচের বোতাম ব্যবহার করুন।")
 	
-	// Then send the options as buttons (shorter versions)
-	let messageData = {
-		"attachment": {
-			"type": "template",
-			"payload": {
-				"template_type": "button",
-				"text": "দ্রুত অপশন:",
-				"buttons": [{
-					"type": "postback",
-					"title": "লোন সম্পর্কে জানতে চাই",
-					"payload": "LOAN_INFO_BENGALI"
-				}, {
-					"type": "postback",
-					"title": "সেভিংস সম্পর্কে জানতে চাই",
-					"payload": "SAVINGS_INFO_BENGALI"
-				}, {
-					"type": "postback",
-					"title": "অভিযোগ জানাতে চাই",
-					"payload": "COMPLAINT_BENGALI"
-				}]
+	// Wait a moment then send the buttons
+	setTimeout(() => {
+		let messageData = {
+			"attachment": {
+				"type": "template",
+				"payload": {
+					"template_type": "button",
+					"text": "দ্রুত অপশন:",
+					"buttons": [{
+						"type": "postback",
+						"title": "লোন সম্পর্কে জানতে চাই",
+						"payload": "LOAN_INFO_BENGALI"
+					}, {
+						"type": "postback",
+						"title": "সেভিংস সম্পর্কে জানতে চাই",
+						"payload": "SAVINGS_INFO_BENGALI"
+					}, {
+						"type": "postback",
+						"title": "অভিযোগ জানাতে চাই",
+						"payload": "COMPLAINT_BENGALI"
+					}]
+				}
 			}
 		}
-	}
-	request({
-		url: 'https://graph.facebook.com/v2.6/me/messages',
-		qs: {access_token:token},
-		method: 'POST',
-		json: {
-			recipient: {id:sender},
-			message: messageData,
-		}
-	}, function(error, response, body) {
-		if (error) {
-			console.log('Error sending messages: ', error)
-		} else if (response.body.error) {
-			console.log('Error: ', response.body.error)
-		}
-	})
+		request({
+			url: 'https://graph.facebook.com/v2.6/me/messages',
+			qs: {access_token:token},
+			method: 'POST',
+			json: {
+				recipient: {id:sender},
+				message: messageData,
+			}
+		}, function(error, response, body) {
+			if (error) {
+				console.log('Error sending messages: ', error)
+			} else if (response.body.error) {
+				console.log('Error: ', response.body.error)
+			}
+		})
+	}, 1000) // Wait 1 second before sending buttons
 }
 
 function sendServicesMenu(sender) {
@@ -290,16 +292,7 @@ function sendLoanDetailsBengali(sender) {
 }
 
 function sendLoanApplyBengali(sender) {
-	sendTextMessage(sender, "📝 ঋণ আবেদনের প্রক্রিয়া:\n\n" +
-		"১. আমাদের অনলাইন আবেদনপত্র পূরণ করুন\n" +
-		"২. প্রয়োজনীয় নথি জমা দিন\n" +
-		"৩. ক্রেডিট চেক এবং পর্যালোচনা (১-২ দিন)\n" +
-		"৪. অনুমোদন এবং অর্থ স্থানান্তর\n\n" +
-		"প্রয়োজনীয় নথি:\n" +
-		"• সরকারি পরিচয়পত্র\n" +
-		"• আয়ের প্রমাণ\n" +
-		"• ব্যাংক স্টেটমেন্ট (৩ মাস)\n\n" +
-		"আবেদন করতে আমাদের ওয়েবসাইটে যান: www.microfinance.com/apply")
+	sendTextMessage(sender, "আমাদের লোন সম্পর্কিত বিস্তারিত জানতে অনুগ্রহ করে আপনার লোকেশন এবং আপনার যোগাযোগের নাম্বার দিন।\n\nআপনার নিকটস্থ যে কোন ব্রাঞ্চের সাথে যোগাযোগ করুন।")
 }
 
 function sendELoanInfo(sender) {
