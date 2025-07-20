@@ -107,7 +107,7 @@ function sendWelcomeMessage(sender) {
 			"type": "template",
 			"payload": {
 				"template_type": "button",
-				"text": "আপনার কী জানতে ইচ্ছা? (What would you like to know?)",
+				"text": "শক্তি ফাউন্ডেশনের অফিসিয়াল পেইজে আপনাকে স্বাগতম।",
 				"buttons": [{
 					"type": "postback",
 					"title": "লোন সম্পর্কে জানতে চাই",
@@ -202,7 +202,7 @@ function sendLoanInfoBengali(sender) {
 			"type": "template",
 			"payload": {
 				"template_type": "button",
-				"text": "আপনার কী জানতে ইচ্ছা? (What would you like to know?)",
+				"text": "লোন সম্পর্কে আপনার কী জানতে ইচ্ছা?",
 				"buttons": [{
 					"type": "postback",
 					"title": "আমি লোন সম্পর্কিত তথ্য চাই",
