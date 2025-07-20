@@ -197,13 +197,39 @@ function sendLoanInfo(sender) {
 }
 
 function sendLoanInfoBengali(sender) {
-	sendTextMessage(sender, "💰 আমাদের ঋণ পরিষেবা:\n\n" +
-		"• ব্যবসায়িক ঋণ: $500 - $5,000\n" +
-		"• ব্যক্তিগত ঋণ: $200 - $2,000\n" +
-		"• শিক্ষা ঋণ: $300 - $3,000\n\n" +
-		"সুদের হার: বছরে ৮% থেকে শুরু\n" +
-		"পরিশোধের সময়: ৬-২৪ মাস\n\n" +
-		"আবেদন করতে 'apply' লিখুন!")
+	let messageData = {
+		"attachment": {
+			"type": "template",
+			"payload": {
+				"template_type": "button",
+				"text": "আপনার কী জানতে ইচ্ছা? (What would you like to know?)",
+				"buttons": [{
+					"type": "postback",
+					"title": "আমি লোন সম্পর্কিত তথ্য চাই",
+					"payload": "LOAN_DETAILS_BENGALI"
+				}, {
+					"type": "postback",
+					"title": "আমি লোন নিতে চাই",
+					"payload": "LOAN_APPLY_BENGALI"
+				}]
+			}
+		}
+	}
+	request({
+		url: 'https://graph.facebook.com/v2.6/me/messages',
+		qs: {access_token:token},
+		method: 'POST',
+		json: {
+			recipient: {id:sender},
+			message: messageData,
+		}
+	}, function(error, response, body) {
+		if (error) {
+			console.log('Error sending messages: ', error)
+		} else if (response.body.error) {
+			console.log('Error: ', response.body.error)
+		}
+	})
 }
 
 function sendSavingsInfoBengali(sender) {
@@ -224,6 +250,29 @@ function sendComplaintInfoBengali(sender) {
 		"• ওয়েবসাইট: www.microfinance.com/complaints\n\n" +
 		"আমরা ২৪ ঘণ্টার মধ্যে প্রতিক্রিয়া জানাবো।\n" +
 		"ধন্যবাদ আপনার মতামত জানানোর জন্য!")
+}
+
+function sendLoanDetailsBengali(sender) {
+	sendTextMessage(sender, "💰 আমাদের ঋণ পরিষেবা:\n\n" +
+		"• ব্যবসায়িক ঋণ: $500 - $5,000\n" +
+		"• ব্যক্তিগত ঋণ: $200 - $2,000\n" +
+		"• শিক্ষা ঋণ: $300 - $3,000\n\n" +
+		"সুদের হার: বছরে ৮% থেকে শুরু\n" +
+		"পরিশোধের সময়: ৬-২৪ মাস\n\n" +
+		"আরও জানতে 'help' লিখুন!")
+}
+
+function sendLoanApplyBengali(sender) {
+	sendTextMessage(sender, "📝 ঋণ আবেদনের প্রক্রিয়া:\n\n" +
+		"১. আমাদের অনলাইন আবেদনপত্র পূরণ করুন\n" +
+		"২. প্রয়োজনীয় নথি জমা দিন\n" +
+		"৩. ক্রেডিট চেক এবং পর্যালোচনা (১-২ দিন)\n" +
+		"৪. অনুমোদন এবং অর্থ স্থানান্তর\n\n" +
+		"প্রয়োজনীয় নথি:\n" +
+		"• সরকারি পরিচয়পত্র\n" +
+		"• আয়ের প্রমাণ\n" +
+		"• ব্যাংক স্টেটমেন্ট (৩ মাস)\n\n" +
+		"আবেদন করতে আমাদের ওয়েবসাইটে যান: www.microfinance.com/apply")
 }
 
 function sendInterestInfo(sender) {
@@ -277,6 +326,12 @@ function handlePostback(sender, payload) {
 			break
 		case 'COMPLAINT_BENGALI':
 			sendComplaintInfoBengali(sender)
+			break
+		case 'LOAN_DETAILS_BENGALI':
+			sendLoanDetailsBengali(sender)
+			break
+		case 'LOAN_APPLY_BENGALI':
+			sendLoanApplyBengali(sender)
 			break
 		case 'EDUCATION':
 			sendTextMessage(sender, "📚 Financial Education Resources:\n\n" +
