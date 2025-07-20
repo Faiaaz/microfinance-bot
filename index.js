@@ -212,7 +212,7 @@ function sendLoanInfoBengali(sender) {
 			"type": "template",
 			"payload": {
 				"template_type": "button",
-				"text": "লোন সম্পর্কে আপনার কী জানতে ইচ্ছা?",
+				"text": "আমাদের লোন প্রোডাক্ট সম্পর্কে জানতে বা আবেদন করতে চাইলে নিচের যেকোনো অপশন বেছে নিন:",
 				"buttons": [{
 					"type": "postback",
 					"title": "আমি লোন সম্পর্কিত তথ্য চাই",
