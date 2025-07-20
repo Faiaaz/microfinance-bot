@@ -61,7 +61,7 @@ app.post('/webhook/', function (req, res) {
 					} else if (text === 'services') {
 						sendServicesMenu(event.sender.id)
 					} else {
-						sendTextMessage(event.sender.id, "Thanks for your message! Type 'help' to see what I can assist you with regarding microfinance services.")
+						sendTextMessage(event.sender.id, "🤖 Hi! I'm your microfinance assistant. Say 'hello' to get started or 'help' to see what I can do!")
 					}
 				}
 				
