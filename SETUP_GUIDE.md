@@ -1,6 +1,6 @@
-# 🚀 Microfinance Bot Setup Guide
+# 🚀 Microfinance Bot Setup Guide (Updated for Bengali Bot)
 
-This guide will walk you through setting up your Facebook Messenger bot for microfinance services.
+This guide will walk you through setting up your Facebook Messenger bot for microfinance services with Bengali language support.
 
 ## 📋 Prerequisites Checklist
 
@@ -8,7 +8,7 @@ This guide will walk you through setting up your Facebook Messenger bot for micr
 - [ ] npm or yarn installed
 - [ ] Facebook Developer Account
 - [ ] Facebook Page (for your microfinance business)
-- [ ] Heroku account (for deployment)
+- [ ] Render/Railway account (for free deployment)
 
 ## 🔧 Step 1: Facebook App Setup
 
@@ -36,7 +36,7 @@ This guide will walk you through setting up your Facebook Messenger bot for micr
 2. Click "Add Callback URL"
 3. Enter your webhook URL:
    - **For local testing**: Use ngrok URL (e.g., `https://abc123.ngrok.io/webhook/`)
-   - **For production**: Use your Heroku app URL (e.g., `https://your-app.herokuapp.com/webhook/`)
+   - **For production**: Use your Render app URL (e.g., `https://your-app.onrender.com/webhook/`)
 4. **Verify Token**: Enter `my_voice_is_my_password_verify_me`
 5. **Subscription Fields**: Check all available fields:
    - `messages`
@@ -55,8 +55,10 @@ npm install
 
 ### 2.2 Set Environment Variables
 
+Create a `.env` file in your project root:
+
 ```bash
-export FB_PAGE_ACCESS_TOKEN=your_actual_page_access_token_here
+FB_PAGE_ACCESS_TOKEN=your_actual_page_access_token_here
 ```
 
 ### 2.3 Test Locally with ngrok
@@ -85,66 +87,57 @@ export FB_PAGE_ACCESS_TOKEN=your_actual_page_access_token_here
 1. Go to your Facebook page
 2. Click "Message"
 3. Try these commands:
-   - Type "hello" or "hi"
-   - Type "loan"
-   - Type "interest"
-   - Type "help"
+   - Type "hello" or "hi" (should show Bengali welcome menu)
+   - Click on "লোন সম্পর্কে জানতে চাই" (should show loan submenu)
+   - Click on "সেভিংস প্রোডাক্টস সম্পর্কে জানতে চাই"
+   - Click on "অভিযোগ জানাতে চাই"
 
-## 🚀 Step 3: Deploy to Heroku
+## 🚀 Step 3: Deploy to Render (Recommended)
 
-### 3.1 Install Heroku CLI
+### 3.1 Deploy to Render
 
-Download and install from: https://devcenter.heroku.com/articles/heroku-cli
+1. Go to [Render.com](https://render.com)
+2. Sign up with GitHub
+3. Click "New" → "Web Service"
+4. Connect your GitHub repository
+5. Configure:
+   - **Name**: `microfinance-bot`
+   - **Environment**: `Node`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+6. Add environment variable:
+   - Key: `FB_PAGE_ACCESS_TOKEN`
+   - Value: Your Facebook Page Access Token
+7. Deploy!
 
-### 3.2 Login to Heroku
+### 3.2 Update Facebook Webhook
 
-```bash
-heroku login
-```
+After deployment, update your Facebook app webhook URL to:
+`https://your-app-name.onrender.com/webhook/`
 
-### 3.3 Create Heroku App
+## 🎯 Step 4: Bot Features
 
-```bash
-heroku create your-microfinance-bot-name
-```
+### 4.1 Bengali Welcome Menu
 
-### 3.4 Set Environment Variables
+The bot now shows a Bengali welcome message with three options:
+- **লোন সম্পর্কে জানতে চাই** (I want to know about loans)
+- **সেভিংস প্রোডাক্টস সম্পর্কে জানতে চাই** (I want to know about savings products)
+- **অভিযোগ জানাতে চাই** (I want to file a complaint)
 
-```bash
-heroku config:set FB_PAGE_ACCESS_TOKEN=your_actual_page_access_token_here
-```
+### 4.2 Loan Submenu
 
-### 3.5 Deploy
+When users click on loans, they see:
+- **আমি লোন সম্পর্কিত তথ্য চাই** (I want information about loans)
+- **আমি লোন নিতে চাই** (I want to take a loan)
 
-```bash
-git add .
-git commit -m "Initial microfinance bot deployment"
-git push heroku main
-```
-
-### 3.6 Update Facebook Webhook
-
-1. Go back to your Facebook app
-2. Update the webhook URL to your Heroku app URL:
-   `https://your-app-name.herokuapp.com/webhook/`
-
-## 🎯 Step 4: Customize Your Bot
-
-### 4.1 Update Bot Information
+### 4.3 Customize Content
 
 Edit `index.js` to customize:
 - Loan amounts and types
 - Interest rates
 - Application process
 - Company information
-
-### 4.2 Update Application URL
-
-In the `sendApplicationInfo()` function, replace `[Your Website URL]` with your actual application website.
-
-### 4.3 Add Your Logo
-
-Replace the image URLs in the message functions with your own images.
+- Contact details
 
 ## 🔒 Step 5: Security & Best Practices
 
@@ -158,7 +151,7 @@ const token = process.env.FB_PAGE_ACCESS_TOKEN
 
 ### 5.2 HTTPS Only
 
-Ensure your production deployment uses HTTPS (Heroku does this automatically).
+Ensure your production deployment uses HTTPS (Render does this automatically).
 
 ### 5.3 Error Handling
 
@@ -171,12 +164,12 @@ The bot includes basic error handling, but consider adding:
 
 ### 6.1 Basic Functionality
 
-Test all commands:
-- [ ] Welcome message
-- [ ] Loan information
-- [ ] Interest rates
-- [ ] Application process
-- [ ] Help menu
+Test all Bengali features:
+- [ ] Bengali welcome message
+- [ ] Loan information in Bengali
+- [ ] Savings products in Bengali
+- [ ] Complaint filing in Bengali
+- [ ] Loan submenu options
 - [ ] Interactive buttons
 
 ### 6.2 Error Scenarios
@@ -206,7 +199,7 @@ For public use, submit your app for Facebook review:
 ### Common Issues
 
 **Webhook verification fails:**
-- Check verify token matches exactly
+- Check verify token matches exactly: `my_voice_is_my_password_verify_me`
 - Ensure webhook URL is accessible
 - Verify HTTPS is used
 
@@ -222,13 +215,10 @@ For public use, submit your app for Facebook review:
 
 ### Debug Commands
 
-Add these to your code for debugging:
-
-```javascript
-console.log('Received message:', text)
-console.log('Sender ID:', sender)
-console.log('Webhook payload:', JSON.stringify(req.body, null, 2))
-```
+The bot includes debug logging. Check your server logs for:
+- Webhook verification requests
+- Message processing
+- Error messages
 
 ## 📞 Support
 
