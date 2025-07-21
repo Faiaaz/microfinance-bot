@@ -92,8 +92,16 @@ app.post('/webhook/', function (req, res) {
 							sendTextMessage(event.sender.id, "🔍 কোন এলাকার শাখা খুঁজছেন? এলাকার নাম লিখুন।")
 						}
 					} else {
-						// Send welcome message for unrecognized input
-						sendWelcomeMessage(event.sender.id)
+						// Check if the text might be a location search
+						const possibleLocations = ['মিরপুর', 'যাত্রাবাড়ী', 'কেরানীগঞ্জ', 'লালবাগ', 'ভাটারা', 'পল্লবী', 'খিলক্ষেত', 'ঢাকা', 'mirpur', 'jatrabari', 'keraniganj', 'lalbag', 'vatara', 'pallabi', 'khilkhet', 'dhaka']
+						const isLocation = possibleLocations.some(loc => text.toLowerCase().includes(loc.toLowerCase()))
+						
+						if (isLocation) {
+							handleLocationSearch(event.sender.id, text)
+						} else {
+							// Send welcome message for unrecognized input
+							sendWelcomeMessage(event.sender.id)
+						}
 					}
 				}
 				
