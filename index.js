@@ -93,7 +93,7 @@ app.post('/webhook/', function (req, res) {
 						}
 					} else {
 						// Check if the text might be a location search
-						const possibleLocations = ['মিরপুর', 'যাত্রাবাড়ী', 'কেরানীগঞ্জ', 'লালবাগ', 'ভাটারা', 'পল্লবী', 'খিলক্ষেত', 'ঢাকা', 'mirpur', 'jatrabari', 'keraniganj', 'lalbag', 'vatara', 'pallabi', 'khilkhet', 'dhaka']
+						const possibleLocations = ['মিরপুর', 'যাত্রাবাড়ী', 'কেরানীগঞ্জ', 'লালবাগ', 'ভাটারা', 'পল্লবী', 'খিলক্ষেত', 'ঢাকা', 'চট্টগ্রাম', 'রাজশাহী', 'কুমিল্লা', 'নাটোর', 'জয়পুরহাট', 'ঝিনাইদহ', 'লাকসাম', 'পুঠিয়া', 'বড়াইগ্রাম', 'mirpur', 'jatrabari', 'keraniganj', 'lalbag', 'vatara', 'pallabi', 'khilkhet', 'dhaka', 'chittagong', 'rajshahi', 'cumilla', 'natore', 'joypurhat', 'jhenaidah', 'laksam', 'puthia', 'baraigram']
 						const isLocation = possibleLocations.some(loc => text.toLowerCase().includes(loc.toLowerCase()))
 						
 						if (isLocation) {
@@ -634,6 +634,105 @@ const shaktiBranches = [
 		lat: 23.8167822,
 		long: 90.366754,
 		category: "MFP"
+	},
+	{
+		code: "4251",
+		name: "Chattagram Kotwali MCC",
+		phone: "001313365836",
+		address: "হোসনেয়ারা বেগম স্বামী :মৃত ছালেহ আহম্মদ ৬৮১/১১২৭ শোলক বহর, বহদ্দার হাট, চট্রগ্রাম",
+		district: "Chattogram",
+		thana: "Panchlaish",
+		lat: 22.36744,
+		long: 91.84251,
+		category: "SMCC"
+	},
+	{
+		code: "4253",
+		name: "Chattagram Potia MCC",
+		phone: "001313365876",
+		address: "মোঃ সেলিম গ্রাম : সুচক্রদন্ডি , ডাক ; পটিয়া, উপজেলা : পটিয়অ , চট্রগ্রাম",
+		district: "Chattogram",
+		thana: "Potia",
+		lat: 22.3000776,
+		long: 91.9737072,
+		category: "SMCC"
+	},
+	{
+		code: "4248",
+		name: "Jhenaidah MCC",
+		phone: "001313365860",
+		address: "জনাব মোঃ আফজাল হোসেন , সিদ্দিকীয়া সড়ক,শাপলা চত্তর,রোড নং-গ-০৪১,বাসা নং-১০,হোল্ডিং নং-০৯,ঝিনাইদহ",
+		district: "Jhenaidah",
+		thana: "Jhenaidah",
+		lat: 23.5437,
+		long: 89.1714,
+		category: "SMCC"
+	},
+	{
+		code: "4249",
+		name: "Rajshahi Puthia MCC",
+		phone: "001313365849",
+		address: "মোঃ আব্দুর রব বানেশ্বর বাজার (ইসলামী ব্যাংকের উত্তরের পেছনের বিল্ডিং)পোঃ বানেশ্বর, থানাঃপুঠিয়া,জেলাঃরাজশাহী।",
+		district: "Rajshahi",
+		thana: "Puthia",
+		lat: 24.3687304,
+		long: 88.7576574,
+		category: "SMCC"
+	},
+	{
+		code: "4254",
+		name: "Natore MCC",
+		phone: "001313365851",
+		address: "মোঃ আহম্মোদ আলী, লক্ষীকোল সদর ,লক্ষীকোল পৌরসভা, বড়াইগ্রাম, নাটোর",
+		district: "Natore",
+		thana: "Baraigram",
+		lat: 24.31996,
+		long: 89.1645446,
+		category: "SMCC"
+	},
+	{
+		code: "4255",
+		name: "Laksam MCC",
+		phone: "001313366219",
+		address: "আল আমিন ভুইয়া, পিতা-মৃত-মমতাজ ভুইয়া, দক্ষিন বাইপাস, লাকসাম, পোষ্টঃ লাকসাম, থানাঃ লাকসাম সদর, জেলাঃ কুমিল্লা",
+		district: "Cumilla",
+		thana: "Laksam",
+		lat: 23.2325151310578,
+		long: 91.12632519805346,
+		category: "SMCC"
+	},
+	{
+		code: "4256",
+		name: "Joypurhat MCC",
+		phone: "001313365889",
+		address: "মোঃ আব্দুল হালিম পিতার নাম : মোঃ আব্দুর রহিম মাতার নাম: আলেয়া বেগম, বাবুপাড়া, ডায়াবেটিক-হাসপাতাল সংলগ্ন, জয়পুরহাট",
+		district: "Joypurhat",
+		thana: "Sadar Joypurhat",
+		lat: 25.0960604,
+		long: 89.0452258,
+		category: "SMCC"
+	},
+	{
+		code: "DIV1",
+		name: "Cumilla Division",
+		phone: "001844215322",
+		address: "মোঃ মোস্তফা কামাল পিতা মৃত- সুরুজ মিয়া সুরুজ টাওয়ার, শাসনগাছা বড় বাড়ি, গ্রাম, পো: কুমিল্লা সদর, থানা- সদর, জেলা- কুমিল্লা।",
+		district: "Cumilla",
+		thana: "Cumilla Sadar",
+		lat: 23.471145,
+		long: 91.162981,
+		category: "DIVO"
+	},
+	{
+		code: "DIV2",
+		name: "Nator Division",
+		phone: "001844504500",
+		address: "মো: মুনসুর রহমান নং-০৮, ডাকঘর: হারোয়া , থানা:বড়াইগ্রাম জেলা: নাটোর",
+		district: "Nator",
+		thana: "Baraigram",
+		lat: 23.8103,
+		long: 90.4125,
+		category: "DIVO"
 	}
 	// Add more branches as needed
 ]
