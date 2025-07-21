@@ -83,6 +83,14 @@ app.post('/webhook/', function (req, res) {
 						sendHelpMenu(event.sender.id)
 					} else if (text === 'services') {
 						sendServicesMenu(event.sender.id)
+					} else if (text.includes('location') || text.includes('address') || text.includes('branch') || text.includes('শাখা') || text.includes('এলাকা')) {
+						// Extract location from the message
+						let location = text.replace(/location|address|branch|শাখা|এলাকা|খুঁজুন|খুঁজছি/gi, '').trim()
+						if (location) {
+							handleLocationSearch(event.sender.id, location)
+						} else {
+							sendTextMessage(event.sender.id, "🔍 কোন এলাকার শাখা খুঁজছেন? এলাকার নাম লিখুন।")
+						}
 					} else {
 						// Send welcome message for unrecognized input
 						sendWelcomeMessage(event.sender.id)
@@ -146,9 +154,9 @@ function setupPersistentMenu() {
 					type: "postback",
 					payload: "SAVINGS_INFO_BENGALI"
 				}, {
-					title: "অভিযোগ জানাতে চাই",
+					title: "শাখা খুঁজুন",
 					type: "postback",
-					payload: "COMPLAINT_BENGALI"
+					payload: "BRANCH_SEARCH"
 				}]
 			}]
 		}
@@ -365,7 +373,7 @@ function sendLoanDetailsBengali(sender) {
 }
 
 function sendLoanApplyBengali(sender) {
-	sendTextMessage(sender, "আমাদের লোন সম্পর্কিত বিস্তারিত জানতে অনুগ্রহ করে আপনার লোকেশন এবং আপনার যোগাযোগের নাম্বার দিন।\n\nআপনার নিকটস্থ যে কোন ব্রাঞ্চের সাথে যোগাযোগ করুন।")
+	sendTextMessage(sender, "আমাদের লোন সম্পর্কিত বিস্তারিত জানতে অনুগ্রহ করে আপনার লোকেশন এবং আপনার যোগাযোগের নাম্বার দিন।\n\nআপনার নিকটস্থ যে কোন ব্রাঞ্চের সাথে যোগাযোগ করুন।\n\n🔍 আপনার এলাকার শাখা খুঁজতে এলাকার নাম লিখুন (যেমন: মিরপুর, যাত্রাবাড়ী, কেরানীগঞ্জ)")
 }
 
 function sendELoanInfo(sender) {
@@ -486,6 +494,9 @@ function handlePostback(sender, payload) {
 		case 'COMPLAINT_BENGALI':
 			sendComplaintInfoBengali(sender)
 			break
+		case 'BRANCH_SEARCH':
+			sendTextMessage(sender, "🔍 আপনার এলাকার শাখা খুঁজতে এলাকার নাম লিখুন:\n\nউদাহরণ:\n• মিরপুর\n• যাত্রাবাড়ী\n• কেরানীগঞ্জ\n• লালবাগ\n• ভাটারা\n\nঅথবা জেলার নাম লিখুন (যেমন: ঢাকা, চট্টগ্রাম)")
+			break
 		case 'LOAN_DETAILS_BENGALI':
 			sendLoanDetailsBengali(sender)
 			break
@@ -524,6 +535,149 @@ function handlePostback(sender, payload) {
 		default:
 			sendTextMessage(sender, "I'm here to help with your microfinance needs. Type 'help' to see what I can do!")
 	}
+}
+
+// Shakti Foundation branch data (from https://www.shakti.org.bd/coverage)
+const shaktiBranches = [
+	{
+		code: "0001",
+		name: "Mirpur 10 Dhaka",
+		phone: "001847099001",
+		address: "বাড়ির মালিকঃকাজি আফুরউদ্দিন আহমদ, ১৯/৩,বড়বাগ মিরপুর, ঢাকা",
+		district: "Dhaka",
+		thana: "Pallabi",
+		lat: 23.801501,
+		long: 90.361314,
+		category: "MFP"
+	},
+	{
+		code: "0002", 
+		name: "Nawbgonj-Section Dhaka",
+		phone: "001847099002",
+		address: "মোঃ সফিকুর রহমান, ৪৯-৫১ নবাবগঞ্জ রোড,জনতা বাংকের উপরে (৩য় তলা) নবাবগঞ্জ-সেকশন, লালবাগ, ঢাকা",
+		district: "Dhaka",
+		thana: "Lalbag",
+		lat: 23.7240015,
+		long: 90.3761593,
+		category: "MFP"
+	},
+	{
+		code: "0003",
+		name: "Jatrabari Dhaka", 
+		phone: "001847099003",
+		address: "মোঃ আলহাজ্ব নুরুদ্দিন সরদার, ৮নং সহিদ ফারুক রোড, যাত্রাবাড়ী, ঢাকা",
+		district: "Dhaka",
+		thana: "Jatrabari",
+		lat: 23.70933,
+		long: 90.428389,
+		category: "MFP"
+	},
+	{
+		code: "0004",
+		name: "Mirpur-Stadium Dhaka",
+		phone: "001847099004", 
+		address: "মোঃ হারুনার রশিদ, পিতাঃ মরহুম হাসান আলী ,বাড়ী নং-১৮, রোড নং-০১, ব্লক- বি ,সেকশন -৬,মিরপুর- ঢাকা,১২১৬",
+		district: "Dhaka",
+		thana: "Pallabi",
+		lat: 23.809203,
+		long: 90.3634943,
+		category: "MFP"
+	},
+	{
+		code: "0005",
+		name: "Vatara Dhaka",
+		phone: "001847099005",
+		address: "মো: মাহবুবুল আলম পিতা : আব্দুস সাত্তার মজুমদার, (২য় তলা), বাড়ী নং-০২, ডা: শাফি স্বরনী রোড, ভাটারা নতুন বাজার, ঢাকা-১২১২",
+		district: "Dhaka", 
+		thana: "Khilkhet",
+		lat: 23.798630,
+		long: 90.428727,
+		category: "MFP"
+	},
+	{
+		code: "0006",
+		name: "Matborbazar-Kamrangirchar Dhaka",
+		phone: "001847099006",
+		address: "হাজী মোঃ সাহাবুদ্দিন পিতা-মৃতঃ আদুল সোবহান তাজ, হারিকেন রোড, পূর্ব ইসলাম নগর, কামরাঙ্গীরচর, ঢাকা",
+		district: "Dhaka",
+		thana: "Keraniganj", 
+		lat: 23.7114231,
+		long: 90.377146,
+		category: "MFP"
+	},
+	{
+		code: "0007",
+		name: "Golambazar-Keraniganj Dhaka",
+		phone: "001847099007",
+		address: "মোঃ মোশারফ হোসেন বাবুল, গোলাম বাজার, চড়াইল ক্লাব রোড, কেরানীগঞ্জ, ঢাকা",
+		district: "Dhaka",
+		thana: "Keraniganj",
+		lat: 23.6980554,
+		long: 90.3919155,
+		category: "MFP"
+	},
+	{
+		code: "0008",
+		name: "Pallabi-1 Dhaka",
+		phone: "001847099008", 
+		address: "উম্মে সালমা চৌধুরী, বাড়ি নং-০৫, রোড নং-০৪, ব্লক-এ, পল্লবী, মিরপুর-১১, ঢাকা",
+		district: "Dhaka",
+		thana: "Pallabi",
+		lat: 23.8167822,
+		long: 90.366754,
+		category: "MFP"
+	}
+	// Add more branches as needed
+]
+
+// Function to search branches by location
+function searchBranchesByLocation(searchTerm) {
+	const searchLower = searchTerm.toLowerCase()
+	const results = []
+	
+	shaktiBranches.forEach(branch => {
+		// Search in multiple fields
+		if (branch.name.toLowerCase().includes(searchLower) ||
+			branch.district.toLowerCase().includes(searchLower) ||
+			branch.thana.toLowerCase().includes(searchLower) ||
+			branch.address.toLowerCase().includes(searchLower)) {
+			results.push(branch)
+		}
+	})
+	
+	return results.slice(0, 5) // Return max 5 results
+}
+
+// Function to send branch search results
+function sendBranchSearchResults(sender, searchTerm) {
+	const results = searchBranchesByLocation(searchTerm)
+	
+	if (results.length === 0) {
+		sendTextMessage(sender, `দুঃখিত, "${searchTerm}" এলাকায় কোন শাখা পাওয়া যায়নি।\n\nঅনুগ্রহ করে অন্য এলাকার নাম লিখুন অথবা আমাদের হেড অফিসে যোগাযোগ করুন:\n\n📞 ফোন: +88 09613-444111\n📍 ঠিকানা: House 04, Road 1, Block A, Section 11, Mirpur, Dhaka 1216`)
+		return
+	}
+	
+	let message = `🔍 "${searchTerm}" এলাকায় পাওয়া শাখাসমূহ:\n\n`
+	
+	results.forEach((branch, index) => {
+		message += `${index + 1}. ${branch.name}\n`
+		message += `📞 ${branch.phone}\n`
+		message += `📍 ${branch.address}\n`
+		message += `🗺️ ${branch.thana}, ${branch.district}\n`
+		message += `🌐 [Google Map](http://www.google.com/maps/place/${branch.lat},${branch.long})\n\n`
+	})
+	
+	message += `আরও শাখা দেখতে: https://www.shakti.org.bd/coverage`
+	
+	sendTextMessage(sender, message)
+}
+
+// Function to handle location search
+function handleLocationSearch(sender, location) {
+	sendTextMessage(sender, `🔍 "${location}" এলাকায় শাখা খুঁজছি...`)
+	setTimeout(() => {
+		sendBranchSearchResults(sender, location)
+	}, 1000)
 }
 
 // spin spin sugar
