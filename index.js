@@ -3,7 +3,15 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const request = require('request')
+const fs = require('fs')
+const csv = require('csv-parser')
 const app = express()
+
+// Global variable to store location data
+let locationData = []
+
+// Facebook Page Access Token
+const token = 'EAAPKDQxpu94BPKD8cvahCt5b1r01WkSaj6WTZBlSJkfbgoxiZBKL7ExPZAZCVLaNdkfy6ZBXn1c4TWZBpJ0ZA3v5RlrPqpoToGIxFoO0PDcihlROoMr2IZC1CXzxGE0MgQGWjmHUyytOcZAWUSexapMaLEzdzgpJyAKlzExv3J9C3KBcwosEqWmvM6i45UqCohOeoP1z4yMd4tgZDZD'
 
 app.set('port', (process.env.PORT || 5000))
 
@@ -12,6 +20,57 @@ app.use(bodyParser.urlencoded({extended: false}))
 
 // parse application/json
 app.use(bodyParser.json())
+
+// Load CSV data on startup
+function loadLocationData() {
+	fs.createReadStream('locations.csv')
+		.pipe(csv())
+		.on('data', (row) => {
+			locationData.push(row)
+		})
+		.on('end', () => {
+			console.log('Location data loaded successfully:', locationData.length, 'records')
+		})
+		.on('error', (error) => {
+			console.error('Error loading CSV:', error)
+		})
+}
+
+// Function to search locations by district or upazila
+function searchLocations(searchTerm) {
+	const results = []
+	const searchLower = searchTerm.toLowerCase()
+	
+	locationData.forEach(location => {
+		const district = location.জেলা ? location.জেলা.toLowerCase() : ''
+		const upazila = location.উপজেলা ? location.উপজেলা.toLowerCase() : ''
+		
+		if (district.includes(searchLower) || upazila.includes(searchLower)) {
+			results.push(location)
+		}
+	})
+	
+	return results
+}
+
+// Function to format location results
+function formatLocationResults(locations) {
+	if (locations.length === 0) {
+		return "দুঃখিত, আপনার এলাকায় কোন শাখা পাওয়া যায়নি। অনুগ্রহ করে অন্য এলাকার নাম দিন।"
+	}
+	
+	let message = `📍 আপনার এলাকায় পাওয়া শাখাসমূহ:\n\n`
+	
+	locations.forEach((location, index) => {
+		message += `${index + 1}। ${location.শাখার_নাম}\n`
+		message += `📍 ${location.ঠিকানা}\n`
+		message += `📞 ${location.ফোন_নাম্বার}\n\n`
+	})
+	
+	message += "আপনার নিকটস্থ শাখায় যোগাযোগ করে লোনের বিস্তারিত জানতে পারেন।"
+	
+	return message
+}
 
 // index
 app.get('/', function (req, res) {
@@ -41,11 +100,19 @@ app.post('/webhook/', function (req, res) {
 				console.log('Processing message from:', event.sender.id)
 				
 				if (event.message && event.message.text) {
-					let text = event.message.text.toLowerCase()
+					let text = event.message.text
 					console.log('Received text:', text)
 					
-					// Send welcome message with client name
-					sendWelcomeMessage(event.sender.id)
+					// Check if this is a location search
+					const searchResults = searchLocations(text)
+					if (searchResults.length > 0) {
+						// This is a location search
+						const locationMessage = formatLocationResults(searchResults)
+						sendTextMessage(event.sender.id, locationMessage)
+					} else {
+						// This is not a location search, send welcome message
+						sendWelcomeMessage(event.sender.id)
+					}
 				}
 				
 				if (event.postback) {
@@ -216,7 +283,6 @@ function handlePostback(sender, payload) {
 // spin spin sugar
 app.listen(app.get('port'), function() {
 	console.log('running on port', app.get('port'))
+	// Load location data when server starts
+	loadLocationData()
 })
-
-// Facebook Page Access Token
-const token = 'EAAPKDQxpu94BPKD8cvahCt5b1r01WkSaj6WTZBlSJkfbgoxiZBKL7ExPZAZCVLaNdkfy6ZBXn1c4TWZBpJ0ZA3v5RlrPqpoToGIxFoO0PDcihlROoMr2IZC1CXzxGE0MgQGWjmHUyytOcZAWUSexapMaLEzdzgpJyAKlzExv3J9C3KBcwosEqWmvM6i45UqCohOeoP1z4yMd4tgZDZD'
