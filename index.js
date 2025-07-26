@@ -10,6 +10,30 @@ const app = express()
 // Global variable to store location data
 let locationData = []
 
+// Bengali to English district mapping
+const bengaliToEnglish = {
+	'ঢাকা': 'dhaka',
+	'চট্টগ্রাম': 'chattogram',
+	'নারায়ণগঞ্জ': 'narayanganj',
+	'গাজীপুর': 'gazipur',
+	'খুলনা': 'khulna',
+	'কুমিল্লা': 'cumilla',
+	'বগুড়া': 'bogura',
+	'রাজশাহী': 'rajshahi',
+	'যশোর': 'jashore',
+	'নাটোর': 'natore',
+	'নওগাঁ': 'naogaon',
+	'ফেনী': 'feni',
+	'জামালপুর': 'jamalpur',
+	'মানিকগঞ্জ': 'manikganj',
+	'ফরিদপুর': 'faridpur',
+	'পাবনা': 'pabna',
+	'নীলফামারী': 'nilphamari',
+	'বরিশাল': 'barishal',
+	'কক্সবাজার': 'coxsbazar',
+	'মুন্সিগঞ্জ': 'munshiganj'
+}
+
 // Facebook Page Access Token
 const token = 'EAAPKDQxpu94BPKD8cvahCt5b1r01WkSaj6WTZBlSJkfbgoxiZBKL7ExPZAZCVLaNdkfy6ZBXn1c4TWZBpJ0ZA3v5RlrPqpoToGIxFoO0PDcihlROoMr2IZC1CXzxGE0MgQGWjmHUyytOcZAWUSexapMaLEzdzgpJyAKlzExv3J9C3KBcwosEqWmvM6i45UqCohOeoP1z4yMd4tgZDZD'
 
@@ -39,7 +63,14 @@ function loadLocationData() {
 // Function to search locations by district or upazila
 function searchLocations(searchTerm) {
 	const results = []
-	const searchLower = searchTerm.toLowerCase()
+	let searchLower = searchTerm.toLowerCase()
+	
+	// Convert Bengali district names to English
+	if (bengaliToEnglish[searchTerm]) {
+		searchLower = bengaliToEnglish[searchTerm]
+	}
+	
+	console.log('Searching for:', searchLower)
 	
 	locationData.forEach(location => {
 		const district = location.District ? location.District.toLowerCase() : ''
@@ -50,6 +81,7 @@ function searchLocations(searchTerm) {
 		}
 	})
 	
+	console.log('Found', results.length, 'results')
 	return results
 }
 
