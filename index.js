@@ -220,8 +220,8 @@ app.post('/webhook/', function (req, res) {
 							sendTextMessage(event.sender.id, locationMessages)
 						}
 					} else {
-						// This is not a location search, send welcome message
-						sendWelcomeMessage(event.sender.id)
+						// This is not a location search, send error message
+						sendTextMessage(event.sender.id, "দুঃখিত, আমি বুঝতে পারছি না। অনুগ্রহ করে আপনার এলাকার নাম সঠিকভাবে লিখুন (যেমন: ঢাকা, মিরপুর, যশোর)।")
 					}
 				}
 				
