@@ -107,23 +107,36 @@ function searchLocations(searchTerm) {
 	return results
 }
 
-// Function to format location results
+// Function to format location results with pagination
 function formatLocationResults(locations) {
 	if (locations.length === 0) {
 		return "দুঃখিত, আপনার এলাকায় কোন শাখা পাওয়া যায়নি। অনুগ্রহ করে অন্য এলাকার নাম দিন।"
 	}
 	
-	let message = `📍 আপনার এলাকায় পাওয়া শাখাসমূহ:\n\n`
+	// Split locations into chunks of 5 per message
+	const chunks = []
+	for (let i = 0; i < locations.length; i += 5) {
+		chunks.push(locations.slice(i, i + 5))
+	}
 	
-	locations.forEach((location, index) => {
-		message += `${index + 1}। ${location['Branch Name']}\n`
-		message += `📍 ${location.Address}\n`
-		message += `📞 ${location['Phone Number']}\n\n`
+	return chunks.map((chunk, chunkIndex) => {
+		let message = chunkIndex === 0 ? 
+			`📍 আপনার এলাকায় পাওয়া শাখাসমূহ (${locations.length}টি):\n\n` :
+			`📍 শাখাসমূহ (পরবর্তী অংশ):\n\n`
+		
+		chunk.forEach((location, index) => {
+			const globalIndex = chunkIndex * 5 + index + 1
+			message += `${globalIndex}। ${location['Branch Name']}\n`
+			message += `📍 ${location.Address}\n`
+			message += `📞 ${location['Phone Number']}\n\n`
+		})
+		
+		if (chunkIndex === chunks.length - 1) {
+			message += "আপনার নিকটস্থ শাখায় যোগাযোগ করে লোনের বিস্তারিত জানতে পারেন।"
+		}
+		
+		return message
 	})
-	
-	message += "আপনার নিকটস্থ শাখায় যোগাযোগ করে লোনের বিস্তারিত জানতে পারেন।"
-	
-	return message
 }
 
 // index
@@ -161,8 +174,18 @@ app.post('/webhook/', function (req, res) {
 					const searchResults = searchLocations(text)
 					if (searchResults.length > 0) {
 						// This is a location search
-						const locationMessage = formatLocationResults(searchResults)
-						sendTextMessage(event.sender.id, locationMessage)
+						const locationMessages = formatLocationResults(searchResults)
+						
+						// Send multiple messages if there are chunks
+						if (Array.isArray(locationMessages)) {
+							locationMessages.forEach((message, index) => {
+								setTimeout(() => {
+									sendTextMessage(event.sender.id, message)
+								}, index * 1000) // Send each message with 1 second delay
+							})
+						} else {
+							sendTextMessage(event.sender.id, locationMessages)
+						}
 					} else {
 						// This is not a location search, send welcome message
 						sendWelcomeMessage(event.sender.id)
