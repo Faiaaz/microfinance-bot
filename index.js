@@ -10,7 +10,7 @@ const app = express()
 // Global variable to store location data
 let locationData = []
 
-// Comprehensive district mapping with spelling variations
+// Comprehensive district and thana mapping with spelling variations
 const districtMapping = {
 	// Bengali to English
 	'ঢাকা': ['dhaka'],
@@ -44,7 +44,40 @@ const districtMapping = {
 	'bogura': ['bogura', 'bogra'],
 	'bogra': ['bogura', 'bogra'],
 	'barishal': ['barishal', 'barisal'],
-	'barisal': ['barishal', 'barisal']
+	'barisal': ['barishal', 'barisal'],
+	
+	// Common thana names
+	'mirpur': ['pallabi'],
+	'মিরপুর': ['pallabi'],
+	'pallabi': ['pallabi'],
+	'পল্লবী': ['pallabi'],
+	'jatrabari': ['jatrabari'],
+	'যাত্রাবাড়ী': ['jatrabari'],
+	'যাত্রাবাড়ি': ['jatrabari'],
+	'keraniganj': ['keraniganj'],
+	'কেরানীগঞ্জ': ['keraniganj'],
+	'savar': ['savar'],
+	'সাভার': ['savar'],
+	'khilkhet': ['khilkhet'],
+	'খিলক্ষেত': ['khilkhet'],
+	'lalbag': ['lalbag'],
+	'লালবাগ': ['lalbag'],
+	'kotwali': ['kotwali'],
+	'কোতয়ালী': ['kotwali'],
+	'khilgaon': ['khilgaon'],
+	'খিলগাঁও': ['khilgaon'],
+	'kadamtoli': ['kadamtoli'],
+	'কদমতলী': ['kadamtoli'],
+	'demra': ['demra'],
+	'ডেমরা': ['demra'],
+	'gulshan': ['gulshan'],
+	'গুলশান': ['gulshan'],
+	'vatara': ['vatara'],
+	'ভাটারা': ['vatara'],
+	'sutrapur': ['sutrapur'],
+	'সুত্রাপুর': ['sutrapur'],
+	'kamrangirchor': ['kamrangirchor'],
+	'কামরাঙ্গীরচর': ['kamrangirchor']
 }
 
 // Facebook Page Access Token
