@@ -90,12 +90,12 @@ function sendWelcomeMessage(sender) {
 		
 		// Wait a moment then send the buttons
 		setTimeout(() => {
-			let messageData = {
+						let messageData = {
 				"attachment": {
 					"type": "template",
 					"payload": {
 						"template_type": "button",
-						"text": "আপনার কী জানতে ইচ্ছা?",
+						"text": " ",
 						"buttons": [{
 							"type": "postback",
 							"title": "ঋণের তথ্য দিন",
