@@ -15,15 +15,12 @@ app.use(bodyParser.json())
 
 // index
 app.get('/', function (req, res) {
-	res.send('Microfinance Bot is running! 🤖💰 - Updated for Railway deployment')
+	res.send('Shakti Foundation Bot is running! 🤖💰')
 })
 
 // for facebook verification
 app.get('/webhook/', function (req, res) {
 	console.log('Webhook verification request received')
-	console.log('Mode:', req.query['hub.mode'])
-	console.log('Token:', req.query['hub.verify_token'])
-	console.log('Challenge:', req.query['hub.challenge'])
 	
 	if (req.query['hub.mode'] === 'subscribe' && req.query['hub.verify_token'] === 'my_voice_is_my_password_verify_me') {
 		console.log('Webhook verified successfully')
@@ -47,46 +44,8 @@ app.post('/webhook/', function (req, res) {
 					let text = event.message.text.toLowerCase()
 					console.log('Received text:', text)
 					
-					// Send welcome message if this is the first interaction
-					sendWelcomeIfNeeded(event.sender.id)
-					
-					// Handle different user inputs
-					if (text === 'hello' || text === 'hi' || text === 'hey' || text === 'start' || text === 'begin') {
-						// Welcome already sent above, no need to send again
-					} else if (text === '1' || text === '১') {
-						sendLoanInfoBengali(event.sender.id)
-					} else if (text === 'e' || text === 'E' || text === 'ই') {
-						sendELoanInfo(event.sender.id)
-					} else if (text === 'w' || text === 'W' || text === 'ও') {
-						sendWashLoanInfo(event.sender.id)
-					} else if (text === 'j' || text === 'J' || text === 'জ') {
-						sendJagranLoanInfo(event.sender.id)
-					} else if (text === '2' || text === '২') {
-						sendSavingsInfoBengali(event.sender.id)
-					} else if (text === '3' || text === '৩') {
-						sendComplaintInfoBengali(event.sender.id)
-					} else if (text === '4' || text === '৪') {
-						sendAgrasarLoanInfo(event.sender.id)
-					} else if (text === '5' || text === '৫') {
-						sendSalaryLoanInfo(event.sender.id)
-					} else if (text === '6' || text === '৬') {
-						sendRemittanceLoanInfo(event.sender.id)
-					} else if (text === '7' || text === '৭') {
-						sendSMELoanInfo(event.sender.id)
-					} else if (text.includes('loan') || text.includes('borrow')) {
-						sendLoanInfo(event.sender.id)
-					} else if (text.includes('interest') || text.includes('rate')) {
-						sendInterestInfo(event.sender.id)
-					} else if (text.includes('apply') || text.includes('application')) {
-						sendApplicationInfo(event.sender.id)
-					} else if (text.includes('help') || text === 'menu') {
-						sendHelpMenu(event.sender.id)
-					} else if (text === 'services') {
-						sendServicesMenu(event.sender.id)
-					} else {
-						// Send welcome message for unrecognized input
-						sendWelcomeMessage(event.sender.id)
-					}
+					// Send welcome message with client name
+					sendWelcomeMessage(event.sender.id)
 				}
 				
 				if (event.postback) {
@@ -101,438 +60,76 @@ app.post('/webhook/', function (req, res) {
 	}
 })
 
-// Use environment variable for access token (more secure)
-const token = process.env.FB_PAGE_ACCESS_TOKEN || "EAAPKDQxpu94BPKD8cvahCt5b1r01WkSaj6WTZBlSJkfbgoxiZBKL7ExPZAZCVLaNdkfy6ZBXn1c4TWZBpJ0ZA3v5RlrPqpoToGIxFoO0PDcihlROoMr2IZC1CXzxGE0MgQGWjmHUyytOcZAWUSexapMaLEzdzgpJyAKlzExv3J9C3KBcwosEqWmvM6i45UqCohOeoP1z4yMd4tgZDZD"
-
-// Set up Greeting Text (shows immediately when user clicks Send Message)
-function setupGreetingText() {
+// Function to get client name from Facebook
+function getClientName(senderId, callback) {
 	request({
-		url: 'https://graph.facebook.com/v2.6/me/messenger_profile',
-		qs: {access_token:token},
-		method: 'POST',
-		json: {
-			greeting: [{
-				locale: "default",
-				text: "শক্তি ফাউন্ডেশনের অফিসিয়াল পেইজে আপনাকে স্বাগতম। আপনার কী জানতে ইচ্ছা?"
-			}]
-		}
+		url: `https://graph.facebook.com/v2.6/${senderId}`,
+		qs: { access_token: token, fields: 'first_name' },
+		method: 'GET'
 	}, function(error, response, body) {
 		if (error) {
-			console.log('Error setting up Greeting Text: ', error)
-		} else if (response.body.error) {
-			console.log('Error: ', response.body.error)
+			console.log('Error getting user info:', error)
+			callback('স্যার/ম্যাডাম')
 		} else {
-			console.log('Greeting Text set up successfully!')
+			try {
+				const userInfo = JSON.parse(body)
+				callback(userInfo.first_name || 'স্যার/ম্যাডাম')
+			} catch (e) {
+				console.log('Error parsing user info:', e)
+				callback('স্যার/ম্যাডাম')
+			}
 		}
 	})
 }
 
-// Set up Persistent Menu (buttons that stay at bottom)
-function setupPersistentMenu() {
-	request({
-		url: 'https://graph.facebook.com/v2.6/me/messenger_profile',
-		qs: {access_token:token},
-		method: 'POST',
-		json: {
-			persistent_menu: [{
-				locale: "default",
-				composer_input_disabled: false,
-				call_to_actions: [{
-					title: "লোন সম্পর্কে জানতে চাই",
-					type: "postback",
-					payload: "LOAN_INFO_BENGALI"
-				}, {
-					title: "সেভিংস সম্পর্কে জানতে চাই",
-					type: "postback",
-					payload: "SAVINGS_INFO_BENGALI"
-				}, {
-					title: "অভিযোগ জানাতে চাই",
-					type: "postback",
-					payload: "COMPLAINT_BENGALI"
-				}]
-			}]
-		}
-	}, function(error, response, body) {
-		if (error) {
-			console.log('Error setting up Persistent Menu: ', error)
-		} else if (response.body.error) {
-			console.log('Error: ', response.body.error)
-		} else {
-			console.log('Persistent Menu set up successfully!')
-		}
-	})
-}
-
-// Track if user has received welcome message
-let welcomeSent = new Set()
-
-// Function to send welcome message if not already sent
-function sendWelcomeIfNeeded(sender) {
-	if (!welcomeSent.has(sender)) {
-		welcomeSent.add(sender)
-		sendWelcomeMessage(sender)
-	}
-}
-
-function sendTextMessage(sender, text) {
-	let messageData = { text:text }
-	
-	request({
-		url: 'https://graph.facebook.com/v2.6/me/messages',
-		qs: {access_token:token},
-		method: 'POST',
-		json: {
-			recipient: {id:sender},
-			message: messageData,
-		}
-	}, function(error, response, body) {
-		if (error) {
-			console.log('Error sending messages: ', error)
-		} else if (response.body.error) {
-			console.log('Error: ', response.body.error)
-		}
-	})
-}
-
+// Function to send welcome message with client name
 function sendWelcomeMessage(sender) {
-	// First send the welcome message with full options as text
-	sendTextMessage(sender, "শক্তি ফাউন্ডেশনের অফিসিয়াল পেইজে আপনাকে স্বাগতম।\n\nআপনার কী জানতে ইচ্ছা?\n\n১. লোন সম্পর্কে জানতে চাই\n২. সেভিংস প্রোডাক্টস সম্পর্কে জানতে চাই\n৩. অভিযোগ জানাতে চাই\n\nউপরে উল্লিখিত নম্বর লিখুন অথবা নিচের বোতাম ব্যবহার করুন।")
+	getClientName(sender, function(clientName) {
+		const welcomeMessage = `শ্রদ্ধেয় ${clientName}! আমি শক্তি, শক্তি ফাউন্ডেশনের পক্ষ থেকে আপনাকে স্বাগতম। আমি কিভাবে আপনাকে সাহায্য করতে পারি?`
+		sendTextMessage(sender, welcomeMessage)
+	})
+}
+
+// Function to send text message
+function sendTextMessage(sender, text) {
+	let messageData = {
+		recipient: {
+			id: sender
+		},
+		message: {
+			text: text
+		}
+	}
 	
-	// Wait a moment then send the buttons
-	setTimeout(() => {
-		let messageData = {
-			"attachment": {
-				"type": "template",
-				"payload": {
-					"template_type": "button",
-					"text": "দ্রুত অপশন:",
-					"buttons": [{
-						"type": "postback",
-						"title": "লোন সম্পর্কে জানতে চাই",
-						"payload": "LOAN_INFO_BENGALI"
-					}, {
-						"type": "postback",
-						"title": "সেভিংস সম্পর্কে জানতে চাই",
-						"payload": "SAVINGS_INFO_BENGALI"
-					}, {
-						"type": "postback",
-						"title": "অভিযোগ জানাতে চাই",
-						"payload": "COMPLAINT_BENGALI"
-					}]
-				}
-			}
-		}
-		request({
-			url: 'https://graph.facebook.com/v2.6/me/messages',
-			qs: {access_token:token},
-			method: 'POST',
-			json: {
-				recipient: {id:sender},
-				message: messageData,
-			}
-		}, function(error, response, body) {
-			if (error) {
-				console.log('Error sending messages: ', error)
-			} else if (response.body.error) {
-				console.log('Error: ', response.body.error)
-			}
-		})
-	}, 1000) // Wait 1 second before sending buttons
-}
-
-function sendServicesMenu(sender) {
-	let messageData = {
-		"attachment": {
-			"type": "template",
-			"payload": {
-				"template_type": "generic",
-				"elements": [{
-					"title": "Micro Loans",
-					"subtitle": "Small loans for business and personal needs",
-					"image_url": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400",
-					"buttons": [{
-						"type": "postback",
-						"title": "Learn More",
-						"payload": "LOAN_INFO"
-					}],
-				}, {
-					"title": "Financial Education",
-					"subtitle": "Learn about budgeting, saving, and investing",
-					"image_url": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400",
-					"buttons": [{
-						"type": "postback",
-						"title": "Learn More",
-						"payload": "EDUCATION"
-					}],
-				}]
-			}
-		}
-	}
 	request({
 		url: 'https://graph.facebook.com/v2.6/me/messages',
-		qs: {access_token:token},
+		qs: { access_token: token },
 		method: 'POST',
-		json: {
-			recipient: {id:sender},
-			message: messageData,
-		}
+		json: messageData
 	}, function(error, response, body) {
 		if (error) {
-			console.log('Error sending messages: ', error)
+			console.log('Error sending message:', error)
 		} else if (response.body.error) {
-			console.log('Error: ', response.body.error)
+			console.log('Error:', response.body.error)
 		}
 	})
 }
 
-function sendLoanInfo(sender) {
-	sendTextMessage(sender, "💰 Micro Loans Available:\n\n" +
-		"• Business Loans: $500 - $5,000\n" +
-		"• Personal Loans: $200 - $2,000\n" +
-		"• Education Loans: $300 - $3,000\n\n" +
-		"Interest rates start at 8% annually.\n" +
-		"Repayment terms: 6-24 months\n\n" +
-		"Type 'apply' to start your application!")
-}
-
-function sendLoanInfoBengali(sender) {
-	let messageData = {
-		"attachment": {
-			"type": "template",
-			"payload": {
-				"template_type": "button",
-				"text": "আমাদের লোন প্রোডাক্ট সম্পর্কে জানতে বা আবেদন করতে চাইলে নিচের যেকোনো অপশন বেছে নিন:",
-				"buttons": [{
-					"type": "postback",
-					"title": "আমি লোন সম্পর্কিত তথ্য চাই",
-					"payload": "LOAN_DETAILS_BENGALI"
-				}, {
-					"type": "postback",
-					"title": "আমি লোন নিতে চাই",
-					"payload": "LOAN_APPLY_BENGALI"
-				}]
-			}
-		}
-	}
-	request({
-		url: 'https://graph.facebook.com/v2.6/me/messages',
-		qs: {access_token:token},
-		method: 'POST',
-		json: {
-			recipient: {id:sender},
-			message: messageData,
-		}
-	}, function(error, response, body) {
-		if (error) {
-			console.log('Error sending messages: ', error)
-		} else if (response.body.error) {
-			console.log('Error: ', response.body.error)
-		}
-	})
-}
-
-function sendSavingsInfoBengali(sender) {
-	sendTextMessage(sender, "💾 আমাদের সঞ্চয় পণ্যসমূহ:\n\n" +
-		"• সঞ্চয় হিসাব: সর্বনিম্ন $১০\n" +
-		"• স্থায়ী আমানত: $১০০ থেকে শুরু\n" +
-		"• লক্ষ্য সঞ্চয়: বিশেষ উদ্দেশ্যে\n\n" +
-		"সুদের হার: বছরে ৩-৫%\n" +
-		"নিরাপদ এবং নির্ভরযোগ্য\n\n" +
-		"আরও জানতে 'help' লিখুন!")
-}
-
-function sendComplaintInfoBengali(sender) {
-	sendTextMessage(sender, "📝 অভিযোগ জানানোর পদ্ধতি:\n\n" +
-		"আপনার অভিযোগ জানাতে:\n" +
-		"• ইমেইল: support@microfinance.com\n" +
-		"• ফোন: +১-৮০০-১২৩-৪৫৬৭\n" +
-		"• ওয়েবসাইট: www.microfinance.com/complaints\n\n" +
-		"আমরা ২৪ ঘণ্টার মধ্যে প্রতিক্রিয়া জানাবো।\n" +
-		"ধন্যবাদ আপনার মতামত জানানোর জন্য!")
-}
-
-function sendLoanDetailsBengali(sender) {
-	// Send only the loan products as text
-	sendTextMessage(sender, "আমাদের লোন প্রোডাক্টসমূহ:\n\n" +
-		"১. 💻 ই-লোন (ই-কমার্স, অনলাইন ব্যবসা)\n" +
-		"২. 🚰 ওয়াশ লোন (স্যানিটেশন, স্বাস্থ্য)\n" +
-		"৩. 🌅 জাগরণ লোন (ক্ষুদ্র ব্যবসা শুরু)\n" +
-		"৪. 📈 অগ্রসর লোন (ব্যবসা সম্প্রসারণ)\n" +
-		"৫. 💰 স্যালারি লোন (চাকরিজীবীদের জন্য)\n" +
-		"৬. 🌍 রেমিটেন্স লোন (প্রবাসীদের পরিবার)\n" +
-		"৭. 🏢 এসএমই লোন (ক্ষুদ্র ও মাঝারি উদ্যোগ)\n\n" +
-		"উপরে উল্লিখিত নম্বর লিখুন।")
-}
-
-function sendLoanApplyBengali(sender) {
-	sendTextMessage(sender, "আমাদের লোন সম্পর্কিত বিস্তারিত জানতে অনুগ্রহ করে আপনার লোকেশন এবং আপনার যোগাযোগের নাম্বার দিন।\n\nআপনার নিকটস্থ যে কোন ব্রাঞ্চের সাথে যোগাযোগ করুন।")
-}
-
-function sendELoanInfo(sender) {
-	sendTextMessage(sender, "💻 ই-লোন:\n\n" +
-		"• সর্বোচ্চ ঋণ: ৫০,০০০ টাকা\n" +
-		"• সুদের হার: বছরে ১২%\n" +
-		"• মেয়াদ: ১২-৩৬ মাস\n" +
-		"• উদ্দেশ্য: ই-কমার্স, অনলাইন ব্যবসা\n\n" +
-		"আবেদনের জন্য: www.shoktifoundation.com/e-loan")
-}
-
-function sendWashLoanInfo(sender) {
-	sendTextMessage(sender, "🚰 ওয়াশ লোন:\n\n" +
-		"• সর্বোচ্চ ঋণ: ৩০,০০০ টাকা\n" +
-		"• সুদের হার: বছরে ১০%\n" +
-		"• মেয়াদ: ১২-২৪ মাস\n" +
-		"• উদ্দেশ্য: স্যানিটেশন, স্বাস্থ্য\n\n" +
-		"আবেদনের জন্য: www.shoktifoundation.com/wash-loan")
-}
-
-function sendJagranLoanInfo(sender) {
-	sendTextMessage(sender, "🌅 জাগরণ লোন:\n\n" +
-		"• সর্বোচ্চ ঋণ: ২৫,০০০ টাকা\n" +
-		"• সুদের হার: বছরে ৯%\n" +
-		"• মেয়াদ: ১২-১৮ মাস\n" +
-		"• উদ্দেশ্য: ক্ষুদ্র ব্যবসা শুরু\n\n" +
-		"আবেদনের জন্য: www.shoktifoundation.com/jagran-loan")
-}
-
-function sendAgrasarLoanInfo(sender) {
-	sendTextMessage(sender, "📈 অগ্রসর লোন:\n\n" +
-		"• সর্বোচ্চ ঋণ: ১,০০,০০০ টাকা\n" +
-		"• সুদের হার: বছরে ১১%\n" +
-		"• মেয়াদ: ১২-৪৮ মাস\n" +
-		"• উদ্দেশ্য: ব্যবসা সম্প্রসারণ\n\n" +
-		"আবেদনের জন্য: www.shoktifoundation.com/agrasar-loan")
-}
-
-function sendSalaryLoanInfo(sender) {
-	sendTextMessage(sender, "💰 স্যালারি লোন:\n\n" +
-		"• সর্বোচ্চ ঋণ: ৫,০০,০০০ টাকা\n" +
-		"• সুদের হার: বছরে ৮%\n" +
-		"• মেয়াদ: ১২-৬০ মাস\n" +
-		"• উদ্দেশ্য: চাকরিজীবীদের জন্য\n\n" +
-		"আবেদনের জন্য: www.shoktifoundation.com/salary-loan")
-}
-
-function sendRemittanceLoanInfo(sender) {
-	sendTextMessage(sender, "🌍 রেমিটেন্স লোন:\n\n" +
-		"• সর্বোচ্চ ঋণ: ২,০০,০০০ টাকা\n" +
-		"• সুদের হার: বছরে ১০%\n" +
-		"• মেয়াদ: ১২-৩৬ মাস\n" +
-		"• উদ্দেশ্য: প্রবাসীদের পরিবার\n\n" +
-		"আবেদনের জন্য: www.shoktifoundation.com/remittance-loan")
-}
-
-function sendSMELoanInfo(sender) {
-	sendTextMessage(sender, "🏢 এসএমই লোন:\n\n" +
-		"• সর্বোচ্চ ঋণ: ১০,০০,০০০ টাকা\n" +
-		"• সুদের হার: বছরে ১২%\n" +
-		"• মেয়াদ: ১২-৭২ মাস\n" +
-		"• উদ্দেশ্য: ক্ষুদ্র ও মাঝারি উদ্যোগ\n\n" +
-		"আবেদনের জন্য: www.shoktifoundation.com/sme-loan")
-}
-
-function sendInterestInfo(sender) {
-	sendTextMessage(sender, "📊 Our Interest Rates:\n\n" +
-		"• Business Loans: 8-12% annually\n" +
-		"• Personal Loans: 10-15% annually\n" +
-		"• Education Loans: 6-10% annually\n\n" +
-		"Rates depend on loan amount, term, and credit history.\n" +
-		"No hidden fees or prepayment penalties!")
-}
-
-function sendApplicationInfo(sender) {
-	sendTextMessage(sender, "📝 Loan Application Process:\n\n" +
-		"1. Fill out our online application\n" +
-		"2. Submit required documents\n" +
-		"3. Credit check and review (1-2 days)\n" +
-		"4. Approval and funds transfer\n\n" +
-		"Required documents:\n" +
-		"• Government ID\n" +
-		"• Proof of income\n" +
-		"• Bank statements (3 months)\n\n" +
-		"Visit our website to apply: [Your Website URL]")
-}
-
-function sendHelpMenu(sender) {
-	sendTextMessage(sender, "🤖 How can I help you?\n\n" +
-		"Try these commands:\n" +
-		"• 'loan' - Learn about our loan options\n" +
-		"• 'interest' - Check interest rates\n" +
-		"• 'apply' - Start loan application\n" +
-		"• 'services' - See all our services\n" +
-		"• 'help' - Show this menu again")
-}
-
+// Function to handle postbacks
 function handlePostback(sender, payload) {
 	switch(payload) {
 		case 'GET_STARTED':
 			sendWelcomeMessage(sender)
 			break
-		case 'SERVICES':
-			sendServicesMenu(sender)
-			break
-		case 'HELP':
-			sendHelpMenu(sender)
-			break
-		case 'LOAN_INFO':
-			sendLoanInfo(sender)
-			break
-		case 'LOAN_INFO_BENGALI':
-			sendLoanInfoBengali(sender)
-			break
-		case 'SAVINGS_INFO_BENGALI':
-			sendSavingsInfoBengali(sender)
-			break
-		case 'COMPLAINT_BENGALI':
-			sendComplaintInfoBengali(sender)
-			break
-
-		case 'LOAN_DETAILS_BENGALI':
-			sendLoanDetailsBengali(sender)
-			break
-		case 'LOAN_APPLY_BENGALI':
-			sendLoanApplyBengali(sender)
-			break
-		case 'E_LOAN_INFO':
-			sendELoanInfo(sender)
-			break
-		case 'WASH_LOAN_INFO':
-			sendWashLoanInfo(sender)
-			break
-		case 'JAGRAN_LOAN_INFO':
-			sendJagranLoanInfo(sender)
-			break
-		case 'AGRASAR_LOAN_INFO':
-			sendAgrasarLoanInfo(sender)
-			break
-		case 'SALARY_LOAN_INFO':
-			sendSalaryLoanInfo(sender)
-			break
-		case 'REMITTANCE_LOAN_INFO':
-			sendRemittanceLoanInfo(sender)
-			break
-		case 'SME_LOAN_INFO':
-			sendSMELoanInfo(sender)
-			break
-		case 'EDUCATION':
-			sendTextMessage(sender, "📚 Financial Education Resources:\n\n" +
-				"• Budgeting basics\n" +
-				"• Saving strategies\n" +
-				"• Credit building tips\n" +
-				"• Investment fundamentals\n\n" +
-				"Check out our blog for detailed articles!")
-			break
 		default:
-			sendTextMessage(sender, "I'm here to help with your microfinance needs. Type 'help' to see what I can do!")
+			sendTextMessage(sender, 'দুঃখিত, এই অপশনটি এখনও উপলব্ধ নয়।')
 	}
 }
 
-
-
 // spin spin sugar
 app.listen(app.get('port'), function() {
-	console.log('Microfinance Bot running on port', app.get('port'))
-	// Set up Greeting Text and Persistent Menu when server starts
-	setupGreetingText()
-	setupPersistentMenu()
+	console.log('running on port', app.get('port'))
 })
+
+// Facebook Page Access Token
+const token = 'EAAPKDQxpu94BPKD8cvahCt5b1r01WkSaj6WTZBlSJkfbgoxiZBKL7ExPZAZCVLaNdkfy6ZBXn1c4TWZBpJ0ZA3v5RlrPqpoToGIxFoO0PDcihlROoMr2IZC1CXzxGE0MgQGWjmHUyytOcZAWUSexapMaLEzdzgpJyAKlzExv3J9C3KBcwosEqWmvM6i45UqCohOeoP1z4yMd4tgZDZD'
