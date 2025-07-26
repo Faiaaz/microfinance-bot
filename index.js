@@ -108,17 +108,24 @@ app.use(bodyParser.json())
 
 // Load CSV data on startup
 function loadLocationData() {
-	fs.createReadStream('Coverage SHAKTI.csv')
-		.pipe(csv())
-		.on('data', (row) => {
-			locationData.push(row)
-		})
-		.on('end', () => {
-			console.log('Location data loaded successfully:', locationData.length, 'records')
-		})
-		.on('error', (error) => {
-			console.error('Error loading CSV:', error)
-		})
+	try {
+		console.log('Attempting to load CSV file...')
+		fs.createReadStream('Coverage SHAKTI.csv')
+			.pipe(csv())
+			.on('data', (row) => {
+				locationData.push(row)
+			})
+			.on('end', () => {
+				console.log('Location data loaded successfully:', locationData.length, 'records')
+			})
+			.on('error', (error) => {
+				console.error('Error loading CSV:', error)
+				console.log('CSV file not found or corrupted. Bot will work without location search.')
+			})
+	} catch (error) {
+		console.error('Error in loadLocationData:', error)
+		console.log('Bot will work without location search.')
+	}
 }
 
 // Function to search locations by district or upazila
