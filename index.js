@@ -95,7 +95,7 @@ function sendWelcomeMessage(sender) {
 					"type": "template",
 					"payload": {
 						"template_type": "button",
-						"text": " ",
+						"text": "আমি কিভাবে আপনাকে সাহায্য করতে পারি?",
 						"buttons": [{
 							"type": "postback",
 							"title": "ঋণের তথ্য দিন",
