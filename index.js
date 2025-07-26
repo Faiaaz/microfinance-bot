@@ -85,7 +85,7 @@ function getClientName(senderId, callback) {
 // Function to send welcome message with client name
 function sendWelcomeMessage(sender) {
 	getClientName(sender, function(clientName) {
-		const welcomeMessage = `শ্রদ্ধেয় ${clientName}! আমি শক্তি, শক্তি ফাউন্ডেশনের পক্ষ থেকে আপনাকে স্বাগতম। আমি কিভাবে আপনাকে সাহায্য করতে পারি?`
+		const welcomeMessage = `শ্রদ্ধেয় ${clientName}! আমি শক্তি, শক্তি ফাউন্ডেশনের পক্ষ থেকে আপনাকে স্বাগতম।`
 		sendTextMessage(sender, welcomeMessage)
 		
 		// Wait a moment then send the buttons
