@@ -87,6 +87,48 @@ function sendWelcomeMessage(sender) {
 	getClientName(sender, function(clientName) {
 		const welcomeMessage = `শ্রদ্ধেয় ${clientName}! আমি শক্তি, শক্তি ফাউন্ডেশনের পক্ষ থেকে আপনাকে স্বাগতম। আমি কিভাবে আপনাকে সাহায্য করতে পারি?`
 		sendTextMessage(sender, welcomeMessage)
+		
+		// Wait a moment then send the buttons
+		setTimeout(() => {
+			let messageData = {
+				"attachment": {
+					"type": "template",
+					"payload": {
+						"template_type": "button",
+						"text": "আপনার কী জানতে ইচ্ছা?",
+						"buttons": [{
+							"type": "postback",
+							"title": "ঋণের তথ্য দিন",
+							"payload": "LOAN_INFO"
+						}, {
+							"type": "postback",
+							"title": "সঞ্চয়ের তথ্য দিন",
+							"payload": "SAVINGS_INFO"
+						}, {
+							"type": "postback",
+							"title": "অভিযোগের জন্য",
+							"payload": "COMPLAINT"
+						}]
+					}
+				}
+			}
+			
+			request({
+				url: 'https://graph.facebook.com/v2.6/me/messages',
+				qs: { access_token: token },
+				method: 'POST',
+				json: {
+					recipient: { id: sender },
+					message: messageData
+				}
+			}, function(error, response, body) {
+				if (error) {
+					console.log('Error sending buttons:', error)
+				} else if (response.body.error) {
+					console.log('Error:', response.body.error)
+				}
+			})
+		}, 1000) // Wait 1 second before sending buttons
 	})
 }
 
@@ -115,11 +157,58 @@ function sendTextMessage(sender, text) {
 	})
 }
 
+// Function to send loan information
+function sendLoanInfo(sender) {
+	sendTextMessage(sender, "💰 আমাদের ঋণ প্রোডাক্টসমূহ:\n\n" +
+		"• ক্ষুদ্র ঋণ: ৫,০০০ - ৫০,০০০ টাকা\n" +
+		"• ব্যবসায়িক ঋণ: ১০,০০০ - ২,০০,০০০ টাকা\n" +
+		"• শিক্ষা ঋণ: ১০,০০০ - ১,০০,০০০ টাকা\n" +
+		"• কৃষি ঋণ: ৫,০০০ - ১,০০,০০০ টাকা\n\n" +
+		"সুদের হার: বছরে ৮-১২%\n" +
+		"মেয়াদ: ৬-৩৬ মাস\n\n" +
+		"আরও বিস্তারিত জানতে আমাদের নিকটস্থ শাখায় যোগাযোগ করুন।")
+}
+
+// Function to send savings information
+function sendSavingsInfo(sender) {
+	sendTextMessage(sender, "💾 আমাদের সঞ্চয় পণ্যসমূহ:\n\n" +
+		"• সঞ্চয় হিসাব: সর্বনিম্ন ১০০ টাকা\n" +
+		"• স্থায়ী আমানত: ১,০০০ টাকা থেকে শুরু\n" +
+		"• লক্ষ্য সঞ্চয়: বিশেষ উদ্দেশ্যে\n" +
+		"• শিশু সঞ্চয়: ভবিষ্যতের জন্য\n\n" +
+		"সুদের হার: বছরে ৩-৬%\n" +
+		"নিরাপদ এবং নির্ভরযোগ্য\n\n" +
+		"আরও জানতে আমাদের শাখায় যোগাযোগ করুন।")
+}
+
+// Function to send complaint information
+function sendComplaintInfo(sender) {
+	sendTextMessage(sender, "📝 অভিযোগ জানানোর পদ্ধতি:\n\n" +
+		"আপনার অভিযোগ জানাতে:\n\n" +
+		"📞 ফোন: +৮৮ ০৯৬১৩-৪৪৪১১১\n" +
+		"📧 ইমেইল: info@shakti.org.bd\n" +
+		"🌐 ওয়েবসাইট: www.shakti.org.bd\n\n" +
+		"📍 হেড অফিস:\n" +
+		"House 04, Road 1, Block A, Section 11\n" +
+		"Mirpur, Pallabi, Dhaka 1216\n\n" +
+		"আমরা ২৪ ঘণ্টার মধ্যে প্রতিক্রিয়া জানাবো।\n" +
+		"ধন্যবাদ আপনার মতামত জানানোর জন্য!")
+}
+
 // Function to handle postbacks
 function handlePostback(sender, payload) {
 	switch(payload) {
 		case 'GET_STARTED':
 			sendWelcomeMessage(sender)
+			break
+		case 'LOAN_INFO':
+			sendLoanInfo(sender)
+			break
+		case 'SAVINGS_INFO':
+			sendSavingsInfo(sender)
+			break
+		case 'COMPLAINT':
+			sendComplaintInfo(sender)
 			break
 		default:
 			sendTextMessage(sender, 'দুঃখিত, এই অপশনটি এখনও উপলব্ধ নয়।')
