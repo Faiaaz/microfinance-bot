@@ -10,28 +10,41 @@ const app = express()
 // Global variable to store location data
 let locationData = []
 
-// Bengali to English district mapping
-const bengaliToEnglish = {
-	'ঢাকা': 'dhaka',
-	'চট্টগ্রাম': 'chattogram',
-	'নারায়ণগঞ্জ': 'narayanganj',
-	'গাজীপুর': 'gazipur',
-	'খুলনা': 'khulna',
-	'কুমিল্লা': 'cumilla',
-	'বগুড়া': 'bogura',
-	'রাজশাহী': 'rajshahi',
-	'যশোর': 'jashore',
-	'নাটোর': 'natore',
-	'নওগাঁ': 'naogaon',
-	'ফেনী': 'feni',
-	'জামালপুর': 'jamalpur',
-	'মানিকগঞ্জ': 'manikganj',
-	'ফরিদপুর': 'faridpur',
-	'পাবনা': 'pabna',
-	'নীলফামারী': 'nilphamari',
-	'বরিশাল': 'barishal',
-	'কক্সবাজার': 'coxsbazar',
-	'মুন্সিগঞ্জ': 'munshiganj'
+// Comprehensive district mapping with spelling variations
+const districtMapping = {
+	// Bengali to English
+	'ঢাকা': ['dhaka'],
+	'চট্টগ্রাম': ['chattogram', 'chittagong'],
+	'নারায়ণগঞ্জ': ['narayanganj'],
+	'গাজীপুর': ['gazipur'],
+	'খুলনা': ['khulna'],
+	'কুমিল্লা': ['cumilla', 'comilla'],
+	'বগুড়া': ['bogura', 'bogra'],
+	'রাজশাহী': ['rajshahi'],
+	'যশোর': ['jashore', 'jessore'],
+	'নাটোর': ['natore'],
+	'নওগাঁ': ['naogaon'],
+	'ফেনী': ['feni'],
+	'জামালপুর': ['jamalpur'],
+	'মানিকগঞ্জ': ['manikganj'],
+	'ফরিদপুর': ['faridpur'],
+	'পাবনা': ['pabna'],
+	'নীলফামারী': ['nilphamari'],
+	'বরিশাল': ['barishal', 'barisal'],
+	'কক্সবাজার': ['coxsbazar', 'cox\'s bazar'],
+	'মুন্সিগঞ্জ': ['munshiganj'],
+	
+	// English variations
+	'jashore': ['jashore', 'jessore'],
+	'jessore': ['jashore', 'jessore'],
+	'chattogram': ['chattogram', 'chittagong'],
+	'chittagong': ['chattogram', 'chittagong'],
+	'cumilla': ['cumilla', 'comilla'],
+	'comilla': ['cumilla', 'comilla'],
+	'bogura': ['bogura', 'bogra'],
+	'bogra': ['bogura', 'bogra'],
+	'barishal': ['barishal', 'barisal'],
+	'barisal': ['barishal', 'barisal']
 }
 
 // Facebook Page Access Token
@@ -63,25 +76,34 @@ function loadLocationData() {
 // Function to search locations by district or upazila
 function searchLocations(searchTerm) {
 	const results = []
-	let searchLower = searchTerm.toLowerCase()
+	const searchLower = searchTerm.toLowerCase()
 	
-	// Convert Bengali district names to English
-	if (bengaliToEnglish[searchTerm]) {
-		searchLower = bengaliToEnglish[searchTerm]
+	// Get all possible search terms for this input
+	let searchTerms = [searchLower]
+	
+	// If it's a known district, get all its variations
+	if (districtMapping[searchTerm]) {
+		searchTerms = districtMapping[searchTerm]
+	} else if (districtMapping[searchLower]) {
+		searchTerms = districtMapping[searchLower]
 	}
 	
-	console.log('Searching for:', searchLower)
+	console.log('Searching for terms:', searchTerms)
 	
 	locationData.forEach(location => {
 		const district = location.District ? location.District.toLowerCase() : ''
 		const thana = location.Thana ? location.Thana.toLowerCase() : ''
 		
-		if (district.includes(searchLower) || thana.includes(searchLower)) {
-			results.push(location)
+		// Check if any search term matches district or thana exactly
+		for (let term of searchTerms) {
+			if (district === term || thana === term) {
+				results.push(location)
+				break // Don't add the same location twice
+			}
 		}
 	})
 	
-	console.log('Found', results.length, 'results')
+	console.log('Found', results.length, 'results for:', searchTerm)
 	return results
 }
 
