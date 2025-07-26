@@ -47,8 +47,8 @@ const districtMapping = {
 	'barisal': ['barishal', 'barisal'],
 	
 	// Common thana names
-	'mirpur': ['pallabi'],
-	'মিরপুর': ['pallabi'],
+	'mirpur': ['mirpur'],
+	'মিরপুর': ['mirpur'],
 	'pallabi': ['pallabi'],
 	'পল্লবী': ['pallabi'],
 	'jatrabari': ['jatrabari'],
