@@ -77,7 +77,17 @@ const districtMapping = {
 	'sutrapur': ['sutrapur'],
 	'সুত্রাপুর': ['sutrapur'],
 	'kamrangirchor': ['kamrangirchor'],
-	'কামরাঙ্গীরচর': ['kamrangirchor']
+	'কামরাঙ্গীরচর': ['kamrangirchor'],
+	
+	// Additional locations that appear in addresses
+	'উলুকান্দি': ['habiganj', 'hobiganj'],
+	'ulukandi': ['habiganj', 'hobiganj'],
+	'আউসকান্দি': ['habiganj', 'hobiganj'],
+	'aushkandi': ['habiganj', 'hobiganj'],
+	'habiganj': ['habiganj', 'hobiganj'],
+	'হবিগঞ্জ': ['habiganj', 'hobiganj'],
+	'nabiganj': ['nabiganj'],
+	'নবিগঞ্জ': ['nabiganj']
 }
 
 // Facebook Page Access Token
