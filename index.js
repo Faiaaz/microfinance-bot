@@ -87,7 +87,12 @@ const districtMapping = {
 	'habiganj': ['habiganj', 'hobiganj'],
 	'হবিগঞ্জ': ['habiganj', 'hobiganj'],
 	'nabiganj': ['nabiganj'],
-	'নবিগঞ্জ': ['nabiganj']
+	'নবিগঞ্জ': ['nabiganj'],
+	
+	// Additional districts
+	'কুষ্টিয়া': ['kushtia'],
+	'কুষ্টিয়া': ['kushtia'],
+	'kushtia': ['kushtia']
 }
 
 // Facebook Page Access Token
@@ -120,32 +125,33 @@ function loadLocationData() {
 function searchLocations(searchTerm) {
 	const results = []
 	const searchLower = searchTerm.toLowerCase()
-	
+
 	// Get all possible search terms for this input
 	let searchTerms = [searchLower]
-	
+
 	// If it's a known district, get all its variations
 	if (districtMapping[searchTerm]) {
 		searchTerms = districtMapping[searchTerm]
 	} else if (districtMapping[searchLower]) {
 		searchTerms = districtMapping[searchLower]
 	}
-	
+
 	console.log('Searching for terms:', searchTerms)
-	
+
 	locationData.forEach(location => {
 		const district = location.District ? location.District.toLowerCase() : ''
 		const thana = location.Thana ? location.Thana.toLowerCase() : ''
-		
-		// Check if any search term matches district or thana exactly
+		const address = location.Address ? location.Address.toLowerCase() : ''
+
+		// Check if any search term matches district, thana, or address
 		for (let term of searchTerms) {
-			if (district === term || thana === term) {
+			if (district === term || thana === term || address.includes(term)) {
 				results.push(location)
 				break // Don't add the same location twice
 			}
 		}
 	})
-	
+
 	console.log('Found', results.length, 'results for:', searchTerm)
 	return results
 }
