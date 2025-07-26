@@ -23,7 +23,7 @@ app.use(bodyParser.json())
 
 // Load CSV data on startup
 function loadLocationData() {
-	fs.createReadStream('locations.csv')
+	fs.createReadStream('Coverage SHAKTI.csv')
 		.pipe(csv())
 		.on('data', (row) => {
 			locationData.push(row)
@@ -42,10 +42,10 @@ function searchLocations(searchTerm) {
 	const searchLower = searchTerm.toLowerCase()
 	
 	locationData.forEach(location => {
-		const district = location.জেলা ? location.জেলা.toLowerCase() : ''
-		const upazila = location.উপজেলা ? location.উপজেলা.toLowerCase() : ''
+		const district = location.District ? location.District.toLowerCase() : ''
+		const thana = location.Thana ? location.Thana.toLowerCase() : ''
 		
-		if (district.includes(searchLower) || upazila.includes(searchLower)) {
+		if (district.includes(searchLower) || thana.includes(searchLower)) {
 			results.push(location)
 		}
 	})
@@ -62,9 +62,9 @@ function formatLocationResults(locations) {
 	let message = `📍 আপনার এলাকায় পাওয়া শাখাসমূহ:\n\n`
 	
 	locations.forEach((location, index) => {
-		message += `${index + 1}। ${location.শাখার_নাম}\n`
-		message += `📍 ${location.ঠিকানা}\n`
-		message += `📞 ${location.ফোন_নাম্বার}\n\n`
+		message += `${index + 1}। ${location['Branch Name']}\n`
+		message += `📍 ${location.Address}\n`
+		message += `📞 ${location['Phone Number']}\n\n`
 	})
 	
 	message += "আপনার নিকটস্থ শাখায় যোগাযোগ করে লোনের বিস্তারিত জানতে পারেন।"
