@@ -78,6 +78,8 @@ const districtMapping = {
 	'সুত্রাপুর': ['sutrapur'],
 	'kamrangirchor': ['kamrangirchor'],
 	'কামরাঙ্গীরচর': ['kamrangirchor'],
+	'rupnagar': ['rupnagar', 'রুপনগর'],
+	'রুপনগর': ['rupnagar', 'রুপনগর'],
 	
 	// Additional locations that appear in addresses
 	'উলুকান্দি': ['habiganj', 'hobiganj'],
